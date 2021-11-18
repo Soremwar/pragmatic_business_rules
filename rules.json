@@ -1,0 +1,163 @@
+[
+  {
+    "actions": [{ "name": "score_P1", "value": { "set": 1 } }],
+    "conditions": {
+      "any": [
+        {
+          "all": [
+            {
+              "name": "DiasMoraInternos",
+              "operator": "less_than_or_equal_to",
+              "value": 0.0
+            },
+            {
+              "name": "DiasMoraExternos",
+              "operator": "less_than_or_equal_to",
+              "value": 0.0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "actions": [{ "name": "score_P2", "value": { "set": 1 } }],
+    "conditions": {
+      "any": [
+        {
+          "all": [
+            {
+              "name": "Referencias_Cant",
+              "operator": "greater_than_or_equal_to",
+              "value": 2.0
+            },
+            {
+              "name": "Referencia_Meses_Antig",
+              "operator": "greater_than_or_equal_to",
+              "value": 12.0
+            }
+          ]
+        },
+        {
+          "all": [
+            {
+              "name": "Referencias_Cant",
+              "operator": "greater_than_or_equal_to",
+              "value": 1.0
+            },
+            {
+              "name": "Referencia_Meses_Antig",
+              "operator": "greater_than_or_equal_to",
+              "value": 24.0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "actions": [{ "name": "score_P3", "value": { "set": 1 } }],
+    "conditions": {
+      "any": [
+        {
+          "all": [
+            {
+              "name": "TC_Meses_Vigencia",
+              "operator": "greater_than_or_equal_to",
+              "value": 0.0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "actions": [{ "name": "score_P4", "value": { "set": 1 } }],
+    "conditions": {
+      "any": [
+        {
+          "all": [
+            {
+              "name": "Tipo_Act_Economica",
+              "operator": "equal_to",
+              "value": "Pensionado"
+            },
+            {
+              "name": "Vl_Porc_Ingre_minimo",
+              "operator": "greater_than_or_equal_to",
+              "value": 0.5
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "actions": [{ "name": "score_P5", "value": { "set": 1 } }],
+    "conditions": {
+      "any": [
+        {
+          "all": [
+            {
+              "name": "Cant_CreditosBanca_Al_dia",
+              "operator": "greater_than_or_equal_to",
+              "value": 1.0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "actions": [{ "name": "score_P6", "value": { "set": 1 } }],
+    "conditions": {
+      "any": [
+        {
+          "all": [
+            {
+              "name": "Cant_Separados_Anno",
+              "operator": "greater_than_or_equal_to",
+              "value": 3.0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "actions": [{ "name": "optional_rules", "value": { "set": 1 } }],
+    "conditions": {
+      "any": [
+        { "name": "score_P2", "operator": "equal_to", "value": 1 },
+        { "name": "score_P3", "operator": "equal_to", "value": 1 },
+        { "name": "score_P4", "operator": "equal_to", "value": 1 },
+        { "name": "score_P5", "operator": "equal_to", "value": 1 },
+        { "name": "score_P6", "operator": "equal_to", "value": 1 }
+      ]
+    }
+  },
+  {
+    "actions": [{ "name": "mandatory_rules", "value": { "set": 1 } }],
+    "conditions": {
+      "all": [{ "name": "score_P1", "operator": "equal_to", "value": 1 }]
+    }
+  },
+  {
+    "actions": [{ "name": "score_credito", "value": { "set": 2 } }],
+    "conditions": {
+      "all": [
+        { "name": "mandatory_rules", "operator": "equal_to", "value": 1 },
+        { "name": "optional_rules", "operator": "equal_to", "value": 0 }
+      ]
+    }
+  },
+  {
+    "actions": [{ "name": "score_credito", "value": { "set": 1 } }],
+    "conditions": {
+      "all": [
+        { "name": "mandatory_rules", "operator": "equal_to", "value": 1 },
+        { "name": "optional_rules", "operator": "equal_to", "value": 1 }
+      ]
+    }
+  }
+]
