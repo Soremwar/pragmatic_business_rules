@@ -8,14 +8,14 @@ class TestAssertSingleConditional:
 		with pytest.raises(
 			Exception,
 			match="'all' and 'any' properties can't be specified for the same conditional"
-		) as e:
+		):
 			assert_single_conditional({"all": [], "any": []})
 
 	def test_valid_conditional(self):
 		with pytest.raises(
 			Exception,
 			match="'all' or 'any' properties were not found in the conditional"
-		) as e:
+		):
 			assert_single_conditional({})
 
 
@@ -23,9 +23,7 @@ class TestEvaluateCondition:
 
 	def test_variable_exists(self):
 		variable = "xyz"
-		with pytest.raises(
-			Exception, match=f"Variable '{variable}' not defined"
-		) as e:
+		with pytest.raises(Exception, match=f"Variable '{variable}' not defined"):
 			evaluate_condition(
 				{
 					"name": variable,
@@ -47,7 +45,7 @@ class TestEvaluateCondition:
 				variable_name,
 				type(variable_value).__name__,
 			)
-		) as e:
+		):
 			evaluate_condition(
 				{
 					"name": variable_name,
@@ -59,6 +57,37 @@ class TestEvaluateCondition:
 				},
 			)
 
+	def test_coerces_number(self):
+		variable_name = "abc"
+		variable_value = 1
+		condition_value = 1.5
+		try:
+			evaluate_condition(
+				{
+					"name": variable_name,
+					"operator": "equal_to",
+					"value": condition_value,
+				},
+				{
+					variable_name: variable_value,
+				},
+			)
+		except Exception as e:
+			try:
+				assert str(
+					e
+				) == "The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'".format(
+					condition_value,
+					variable_name,
+					type(variable_value).__name__,
+				)
+			except:
+				pytest.fail(
+					"Unexpected failure when checking if number types are comparable"
+				)
+
+			pytest.fail("Number types should be comparable")
+
 	def test_invalid_type(self):
 		variable = "123"
 		value = {}
@@ -69,7 +98,7 @@ class TestEvaluateCondition:
 				value,
 				type(value).__name__,
 			)
-		) as e:
+		):
 			evaluate_condition(
 				{
 					"name": variable,
@@ -113,7 +142,7 @@ class TestEvaluateCondition:
 		with pytest.raises(
 			Exception,
 			match=f"The operator '{operator}' is not valid for string operations"
-		) as e:
+		):
 			evaluate_condition(
 				{
 					"name": variable,
@@ -125,13 +154,39 @@ class TestEvaluateCondition:
 				},
 			)
 
+	def test_number_equal_to(self):
+		variable = "some variable"
+		value = 15
+
+		assert evaluate_condition(
+			{
+				"name": variable,
+				"operator": "equal_to",
+				"value": value,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert not evaluate_condition(
+			{
+				"name": variable,
+				"operator": "equal_to",
+				"value": value,
+			},
+			{
+				variable: value + 10,
+			},
+		)
+
 	def test_invalid_number_operator(self):
 		variable = "number variable"
 		operator = "invalid operator"
 		with pytest.raises(
 			Exception,
 			match=f"The operator '{operator}' is not valid for number operations"
-		) as e:
+		):
 			evaluate_condition(
 				{
 					"name": variable,

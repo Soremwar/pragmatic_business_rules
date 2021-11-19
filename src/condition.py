@@ -1,14 +1,6 @@
 from typing import Any, Dict, List, Literal, Optional, Union
 from .types import Condition, Conditional
 
-number_operators = [
-	"equal_to",
-	"greater_than_or_equal_to",
-	"greater_than",
-	"less_than_or_equal_to",
-	"less_than",
-]
-
 
 def assert_single_conditional(conditional: Conditional):
 	all = conditional.get("all")
@@ -24,9 +16,11 @@ def assert_single_conditional(conditional: Conditional):
 		)
 
 
-# TODO
-# Allow casting between ints and floats
 def assert_comparable_type(value: Any, variable_name: str, variable_value: Any):
+	# Ints and floats are comparable
+	if type(value) in [int, float] and type(variable_value) in [int, float]:
+		return
+
 	if type(value) != type(variable_value):
 		raise Exception(
 			"The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'"
@@ -68,12 +62,12 @@ def evaluate_condition(
 				f"The operator '{condition_operator}' is not valid for string operations"
 			)
 	elif type(condition_value) == int or type(condition_value) == float:
-		if condition_operator not in number_operators:
+		if condition_operator == "equal_to":
+			return condition_value == variable
+		else:
 			raise Exception(
 				f"The operator '{condition_operator}' is not valid for number operations"
 			)
-
-		raise Exception("Unimplemented")
 	else:
 		raise Exception(
 			"The value '{}' has a type '{}' which is not valid for a condition value"
