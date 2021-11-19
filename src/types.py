@@ -1,5 +1,9 @@
 from __future__ import annotations
-from typing import List, Literal, Optional, TypedDict, Union
+from typing import Dict, List, Literal, Optional, TypedDict, Union
+
+
+class Action(TypedDict):
+	set: Optional[Union[int, float, str]]
 
 
 class Condition(TypedDict):
@@ -15,5 +19,5 @@ class Conditional(TypedDict):
 
 
 class Rule(TypedDict):
-	actions: dict
+	actions: Dict[str, Action]
 	conditions: Conditional

@@ -1,6 +1,6 @@
 [
   {
-    "actions": [{ "name": "score_P1", "value": { "set": 1 } }],
+    "actions": { "score_P1": { "set": 1 } },
     "conditions": {
       "any": [
         {
@@ -21,7 +21,7 @@
     }
   },
   {
-    "actions": [{ "name": "score_P2", "value": { "set": 1 } }],
+    "actions": { "score_P2": { "set": 1 } },
     "conditions": {
       "any": [
         {
@@ -56,7 +56,7 @@
     }
   },
   {
-    "actions": [{ "name": "score_P3", "value": { "set": 1 } }],
+    "actions": { "score_P3": { "set": 1 } },
     "conditions": {
       "any": [
         {
@@ -72,7 +72,7 @@
     }
   },
   {
-    "actions": [{ "name": "score_P4", "value": { "set": 1 } }],
+    "actions": { "score_P4": { "set": 1 } },
     "conditions": {
       "any": [
         {
@@ -93,7 +93,7 @@
     }
   },
   {
-    "actions": [{ "name": "score_P5", "value": { "set": 1 } }],
+    "actions": { "score_P5": { "set": 1 } },
     "conditions": {
       "any": [
         {
@@ -109,7 +109,7 @@
     }
   },
   {
-    "actions": [{ "name": "score_P6", "value": { "set": 1 } }],
+    "actions": { "score_P6": { "set": 1 } },
     "conditions": {
       "any": [
         {
@@ -125,7 +125,7 @@
     }
   },
   {
-    "actions": [{ "name": "optional_rules", "value": { "set": 1 } }],
+    "actions": { "optional_rules": { "set": 1 } },
     "conditions": {
       "any": [
         { "name": "score_P2", "operator": "equal_to", "value": 1 },
@@ -137,13 +137,13 @@
     }
   },
   {
-    "actions": [{ "name": "mandatory_rules", "value": { "set": 1 } }],
+    "actions": { "mandatory_rules": { "set": 1 } },
     "conditions": {
       "all": [{ "name": "score_P1", "operator": "equal_to", "value": 1 }]
     }
   },
   {
-    "actions": [{ "name": "score_credito", "value": { "set": 2 } }],
+    "actions": { "score_credito": { "set": 2 } },
     "conditions": {
       "all": [
         { "name": "mandatory_rules", "operator": "equal_to", "value": 1 },
@@ -152,7 +152,7 @@
     }
   },
   {
-    "actions": [{ "name": "score_credito", "value": { "set": 1 } }],
+    "actions": { "score_credito": { "set": 1 } },
     "conditions": {
       "all": [
         { "name": "mandatory_rules", "operator": "equal_to", "value": 1 },
