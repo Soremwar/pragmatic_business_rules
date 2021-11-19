@@ -1,5 +1,13 @@
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 from .types import Condition, Conditional
+
+number_operators = [
+	"equal_to",
+	"greater_than_or_equal_to",
+	"greater_than",
+	"less_than_or_equal_to",
+	"less_than",
+]
 
 
 def assert_single_conditional(conditional: Conditional):
@@ -16,11 +24,28 @@ def assert_single_conditional(conditional: Conditional):
 		)
 
 
+# TODO
+# Allow casting between ints and floats
+def assert_comparable_type(value: Any, variable_name: str, variable_value: Any):
+	if type(value) != type(variable_value):
+		raise Exception(
+			"The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'"
+			.format(
+				value,
+				variable_name,
+				type(variable_value).__name__,
+			)
+		)
+
+
+# By this point, the incoming conditions and variables have to have been already validated
+# for correct value types
 def evaluate_condition(
 	condition: Condition,
 	variables: Dict[str, Union[int, float, str]],
-):
+) -> bool:
 	condition_name = condition.get("name")
+	condition_operator = condition.get("operator")
 	condition_value = condition.get("value")
 
 	# Validate variable exists and matches type
@@ -29,21 +54,34 @@ def evaluate_condition(
 
 	variable: Union[str, int, float] = variables.get(condition_name)
 
-	# TODO
-	# Allow casting between ints and floats
-	if type(condition_value) != type(variables.get(condition_name)):
+	assert_comparable_type(
+		condition_value,
+		condition_name,
+		variables.get(condition_name),
+	)
+
+	if type(condition_value) == str:
+		if condition_operator == "equal_to":
+			return condition_value == variable
+		else:
+			raise Exception(
+				f"The operator '{condition_operator}' is not valid for string operations"
+			)
+	elif type(condition_value) == int or type(condition_value) == float:
+		if condition_operator not in number_operators:
+			raise Exception(
+				f"The operator '{condition_operator}' is not valid for number operations"
+			)
+
+		raise Exception("Unimplemented")
+	else:
 		raise Exception(
-			"The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'"
+			"The value '{}' has a type '{}' which is not valid for a condition value"
 			.format(
 				condition_value,
-				condition_name,
-				type(variable).__name__,
+				type(condition_value).__name__,
 			)
 		)
-
-	# TODO
-	# Test other operators and validate string doesn't use operators other than equals
-	return condition_value == variable
 
 
 def evaluate_conditional(
