@@ -439,6 +439,134 @@ class TestEvaluateConditional:
 			"all",
 		)
 
+	def test_all_conditions_nested(self):
+		variable_1 = "some variable"
+		value_1 = 6487
+		variable_2 = "some other variable"
+		value_2 = "asdjn"
+		variable_3 = "some other other variable"
+		value_3 = 4580.1
+
+		assert evaluate_conditional(
+			[
+				{
+					"all": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2,
+						},
+					],
+				},
+				{
+					"all": [{
+						"name": variable_3,
+						"operator": "equal_to",
+						"value": value_3,
+					}],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"all",
+		)
+
+		assert evaluate_conditional(
+			[
+				{
+					"all": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2,
+						},
+					],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+			},
+			"all",
+		)
+
+		assert not evaluate_conditional(
+			[
+				{
+					"all": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2 + "something",
+						},
+					],
+				},
+				{
+					"all": [{
+						"name": variable_3,
+						"operator": "equal_to",
+						"value": value_3,
+					}],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"all",
+		)
+
+		assert not evaluate_conditional(
+			[
+				{
+					"all": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2 + "something",
+						},
+					],
+				},
+				{
+					"all": [{
+						"name": variable_3,
+						"operator": "equal_to",
+						"value": value_3 + 17,
+					}],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"all",
+		)
+
 	def test_any_conditions(self):
 		variable_1 = "some variable"
 		value_1 = 47.5
@@ -501,6 +629,284 @@ class TestEvaluateConditional:
 			{
 				variable_1: value_1,
 				variable_2: value_2,
+			},
+			"any",
+		)
+
+	def test_any_conditions_nested(self):
+		variable_1 = "some variable"
+		value_1 = 19
+		variable_2 = "some other variable"
+		value_2 = "keeping"
+		variable_3 = "some other other variable"
+		value_3 = 5123.45
+
+		assert evaluate_conditional(
+			[
+				{
+					"any": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2,
+						},
+					],
+				},
+				{
+					"any": [{
+						"name": variable_3,
+						"operator": "equal_to",
+						"value": value_3,
+					}],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"any",
+		)
+
+		assert evaluate_conditional(
+			[
+				{
+					"any": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2 + "something",
+						},
+					],
+				},
+				{
+					"any": [{
+						"name": variable_3,
+						"operator": "equal_to",
+						"value": value_3,
+					}],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"any",
+		)
+
+		assert evaluate_conditional(
+			[
+				{
+					"any": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2 + "something",
+						},
+					],
+				},
+				{
+					"any": [{
+						"name": variable_3,
+						"operator": "equal_to",
+						"value": value_3 + 15156416,
+					}],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"any",
+		)
+
+		assert not evaluate_conditional(
+			[
+				{
+					"any": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1 + 54164,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2 + "something",
+						},
+					],
+				},
+				{
+					"any": [{
+						"name": variable_3,
+						"operator": "equal_to",
+						"value": value_3 + 17,
+					}],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"any",
+		)
+
+	def test_mixed_conditions_nested(self):
+		variable_1 = "some variable"
+		value_1 = 41684
+		variable_2 = "some other variable"
+		value_2 = "clancy"
+		variable_3 = "some other other variable"
+		value_3 = 178.45
+
+		assert evaluate_conditional(
+			[
+				{
+					"any": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2 + "asd",
+						},
+					],
+				},
+				{
+					"all": [{
+						"name": variable_3,
+						"operator": "equal_to",
+						"value": value_3,
+					}],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"any",
+		)
+
+		assert not evaluate_conditional(
+			[
+				{
+					"all": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"name": variable_2,
+							"operator": "equal_to",
+							"value": value_2 + "something",
+						},
+					],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"any",
+		)
+
+		assert evaluate_conditional(
+			[
+				{
+					"all": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"any": [
+								{
+									"name": variable_2,
+									"operator": "equal_to",
+									"value": value_2 + "something",
+								},
+								{
+									"name": variable_3,
+									"operator": "equal_to",
+									"value": value_3,
+								},
+							]
+						},
+					],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
+			},
+			"all",
+		)
+
+		assert not evaluate_conditional(
+			[
+				{
+					"all": [
+						{
+							"name": variable_1,
+							"operator": "equal_to",
+							"value": value_1,
+						},
+						{
+							"any": [
+								{
+									"name": variable_2,
+									"operator": "equal_to",
+									"value": value_2 + "something",
+								},
+								{
+									"all": [
+										{
+											"name": variable_1,
+											"operator": "equal_to",
+											"value": value_1,
+										},
+										{
+											"name": variable_3,
+											"operator": "equal_to",
+											"value": value_3 + 245152,
+										},
+									]
+								},
+							]
+						},
+					],
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+				variable_3: value_3,
 			},
 			"any",
 		)
