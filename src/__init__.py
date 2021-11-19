@@ -25,14 +25,14 @@ def process_rules(
 		result = evaluate_conditional(conditional, variables, type)
 		print(result)
 
-import json
-f = open("rules.json")
-data: List[Rule] = json.load(f)
+# import json
+# f = open("rules.json")
+# data: List[Rule] = json.load(f)
 
-process_rules(
-	data,
-	{
-		"DiasMoraInternos": 1.0,
-		"DiasMoraExternos": 1.0,
-	}
-)
+# process_rules(
+# 	data,
+# 	{
+# 		"DiasMoraInternos": 1.0,
+# 		"DiasMoraExternos": 1.0,
+# 	}
+# )
