@@ -1,5 +1,5 @@
 import pytest
-from src.condition import assert_single_conditional, evaluate_condition
+from src.condition import assert_single_conditional, evaluate_condition, evaluate_conditional
 
 
 class TestAssertSingleConditional:
@@ -345,3 +345,162 @@ class TestEvaluateCondition:
 					variable: 1,
 				},
 			)
+
+
+class TestEvaluateConditional:
+
+	def test_invalid_type(self):
+		type = "something else"
+		with pytest.raises(
+			Exception,
+			match=f"The evaluation type '{type}' is not a valid conditional type"
+		):
+			evaluate_conditional(
+				[],
+				{},
+				type,
+			)
+
+	def test_empty_conditional_yields_false(self):
+		assert not evaluate_conditional([], {}, "all")
+		assert not evaluate_conditional([], {}, "any")
+
+	def test_all_conditions(self):
+		variable_1 = "some variable"
+		value_1 = 123
+		variable_2 = "some other variable"
+		value_2 = "xyz"
+
+		assert evaluate_conditional(
+			[
+				{
+					"name": variable_1,
+					"operator": "equal_to",
+					"value": value_1,
+				},
+				{
+					"name": variable_2,
+					"operator": "equal_to",
+					"value": value_2,
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+			},
+			"all",
+		)
+
+		assert evaluate_conditional(
+			[
+				{
+					"name": variable_1,
+					"operator": "equal_to",
+					"value": value_1,
+				},
+			],
+			{
+				variable_1: value_1,
+			},
+			"all",
+		)
+
+		assert not evaluate_conditional(
+			[
+				{
+					"name": variable_1,
+					"operator": "equal_to",
+					"value": value_1,
+				},
+				{
+					"name": variable_2,
+					"operator": "equal_to",
+					"value": value_2 + "123",
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+			},
+			"all",
+		)
+
+		assert not evaluate_conditional(
+			[
+				{
+					"name": variable_1,
+					"operator": "equal_to",
+					"value": value_1 + 15,
+				},
+			],
+			{
+				variable_1: value_1,
+			},
+			"all",
+		)
+
+	def test_any_conditions(self):
+		variable_1 = "some variable"
+		value_1 = 47.5
+		variable_2 = "some other variable"
+		value_2 = "A1"
+
+		assert evaluate_conditional(
+			[
+				{
+					"name": variable_1,
+					"operator": "equal_to",
+					"value": value_1,
+				},
+				{
+					"name": variable_2,
+					"operator": "equal_to",
+					"value": value_2,
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+			},
+			"any",
+		)
+
+		assert evaluate_conditional(
+			[
+				{
+					"name": variable_1,
+					"operator": "equal_to",
+					"value": value_1,
+				},
+				{
+					"name": variable_2,
+					"operator": "equal_to",
+					"value": value_2 + "asd",
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+			},
+			"any",
+		)
+
+		assert not evaluate_conditional(
+			[
+				{
+					"name": variable_1,
+					"operator": "equal_to",
+					"value": value_1 + 10,
+				},
+				{
+					"name": variable_2,
+					"operator": "equal_to",
+					"value": value_2 + "123",
+				},
+			],
+			{
+				variable_1: value_1,
+				variable_2: value_2,
+			},
+			"any",
+		)

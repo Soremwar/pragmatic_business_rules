@@ -88,7 +88,8 @@ def evaluate_condition(
 
 def evaluate_conditional(
 	conditional: Optional[List[Union[Conditional, Condition]]],
-	variables: Dict[str, Union[str, int]], type: Literal["all", "any"]
+	variables: Dict[str, Union[str, int]],
+	type: Literal["all", "any"],
 ) -> bool:
 	"""
 	This function will evaluate the conditionals and return the boolean result for the entire group
@@ -97,26 +98,26 @@ def evaluate_conditional(
 	- all: All conditionals must be true
 	- any: At least one conditional must be true
 	"""
+	if type not in ["all", "any"]:
+		raise Exception(
+			f"The evaluation type '{type}' is not a valid conditional type"
+		)
+
 	if conditional is None:
 		return False
-
-	# Below there are checks that make sure to only refresh the result of the conditional
-	# when the type it's set to is the correct one
-	# The type "all" will only refresh the result if the result hasn't been marked as false
-	# already, similarly the type "any" won't continue to process the conditionals if the result
-	# has been marked as true
 
 	# Make sure that the conditional contains items that can be evaluated
 	# If no items were evaluated, mark the conditional as false
 	evaluated_items = 0
-	result = True
+	# If the type is "all", the goal is to change the result to false, if it's "any"
+	# we try to set it to true
+	result = True if type == "all" else False
 	for c in conditional:
+		condition_result = None
+
 		# If it contains a value, it's a simple condition
 		if "value" in c:
-			if type == "all" and result != False:
-				result = evaluate_condition(c, variables)
-			elif type == "any" and result != True:
-				result = evaluate_condition(c, variables)
+			condition_result = evaluate_condition(c, variables)
 		else:
 			assert_single_conditional(c)
 
@@ -126,19 +127,26 @@ def evaluate_conditional(
 			subconditional = all if all is not None else any
 			subtype = "all" if all is not None else "any"
 
-			if type == "all" and result != False:
-				result = evaluate_conditional(subconditional, variables, subtype)
-			elif type == "any" and result != True:
-				result = evaluate_conditional(subconditional, variables, subtype)
+			condition_result = evaluate_conditional(
+				subconditional,
+				variables,
+				subtype,
+			)
+
+		# Should never happend
+		if condition_result is None:
+			raise Exception("The evaluation of a condition failed")
 
 		evaluated_items += 1
 
 		# If one of the conditions returned false and the type is set to "all", stop evaluating and return
-		if result == False and type == "all":
+		# There is no need to change the value otherwise
+		if type == "all" and condition_result == False:
+			result = condition_result
 			break
-
 		# If one of the conditions returned true and the type is set to "any", stop evaluating and return
-		if evaluated_items > 0 and result == True and type == "any":
+		elif type == "any" and condition_result == True:
+			result = condition_result
 			break
 
 	return result if evaluated_items > 0 else False
