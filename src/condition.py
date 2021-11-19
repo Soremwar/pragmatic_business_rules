@@ -29,6 +29,8 @@ def evaluate_condition(condition: Condition, variables: Dict[str, Union[int, flo
 			type(variable).__name__,
 		))
 
+	# TODO
+	# Test other operators and validate string doesn't use operators other than equals
 	return condition_value == variable
 
 def evaluate_conditional(
