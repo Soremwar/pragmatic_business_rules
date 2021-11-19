@@ -180,6 +180,154 @@ class TestEvaluateCondition:
 			},
 		)
 
+	def test_number_greater_than_or_equal_to(self):
+		variable = "some variable"
+		value = 450.54
+
+		assert evaluate_condition(
+			{
+				"name": variable,
+				"operator": "greater_than_or_equal_to",
+				"value": value,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert evaluate_condition(
+			{
+				"name": variable,
+				"operator": "greater_than_or_equal_to",
+				"value": value + 1,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert not evaluate_condition(
+			{
+				"name": variable,
+				"operator": "greater_than_or_equal_to",
+				"value": value - 1,
+			},
+			{
+				variable: value,
+			},
+		)
+
+	def test_number_greater_than(self):
+		variable = "some variable"
+		value = 125
+
+		assert evaluate_condition(
+			{
+				"name": variable,
+				"operator": "greater_than",
+				"value": value + 1,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert not evaluate_condition(
+			{
+				"name": variable,
+				"operator": "greater_than",
+				"value": value,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert not evaluate_condition(
+			{
+				"name": variable,
+				"operator": "greater_than",
+				"value": value - 1,
+			},
+			{
+				variable: value,
+			},
+		)
+
+	def test_number_less_than_or_equal_to(self):
+		variable = "some variable"
+		value = 521350.879821
+
+		assert evaluate_condition(
+			{
+				"name": variable,
+				"operator": "less_than_or_equal_to",
+				"value": value - 1,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert evaluate_condition(
+			{
+				"name": variable,
+				"operator": "less_than_or_equal_to",
+				"value": value,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert not evaluate_condition(
+			{
+				"name": variable,
+				"operator": "less_than_or_equal_to",
+				"value": value + 1,
+			},
+			{
+				variable: value,
+			},
+		)
+
+	def test_number_less_than(self):
+		variable = "some variable"
+		value = 48.5316541
+
+		assert evaluate_condition(
+			{
+				"name": variable,
+				"operator": "less_than",
+				"value": value - 1,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert not evaluate_condition(
+			{
+				"name": variable,
+				"operator": "less_than",
+				"value": value,
+			},
+			{
+				variable: value,
+			},
+		)
+
+		assert not evaluate_condition(
+			{
+				"name": variable,
+				"operator": "less_than",
+				"value": value + 1,
+			},
+			{
+				variable: value,
+			},
+		)
+
 	def test_invalid_number_operator(self):
 		variable = "number variable"
 		operator = "invalid operator"
