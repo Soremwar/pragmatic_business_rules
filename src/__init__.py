@@ -7,7 +7,7 @@ from typing import Dict, List, Union
 # Use jsonschema to validate rules and variables
 def process_rules(
 	rules: List[Rule],
-	variables: Dict[str, Union[int, float, str]]
+	variables: Dict[str, Union[int, float, str]],
 ):
 	for rule in rules:
 		actions = rule.get("actions")
@@ -24,6 +24,7 @@ def process_rules(
 
 		result = evaluate_conditional(conditional, variables, type)
 		print(result)
+
 
 # import json
 # f = open("rules.json")

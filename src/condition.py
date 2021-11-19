@@ -1,16 +1,25 @@
 from typing import Dict, List, Literal, Optional, Union
 from .types import Condition, Conditional
 
+
 def assert_single_conditional(conditional: Conditional):
 	all = conditional.get("all")
 	any = conditional.get("any")
 
 	if all is not None and any is not None:
-		raise Exception("'all' and 'any' properties can't be specified for the same conditional")
+		raise Exception(
+			"'all' and 'any' properties can't be specified for the same conditional"
+		)
 	elif all is None and any is None:
-		raise Exception("'all' or 'any' properties were not found in the conditional")
+		raise Exception(
+			"'all' or 'any' properties were not found in the conditional"
+		)
 
-def evaluate_condition(condition: Condition, variables: Dict[str, Union[int, float, str]]):
+
+def evaluate_condition(
+	condition: Condition,
+	variables: Dict[str, Union[int, float, str]],
+):
 	condition_name = condition.get("name")
 	condition_value = condition.get("value")
 
@@ -23,20 +32,23 @@ def evaluate_condition(condition: Condition, variables: Dict[str, Union[int, flo
 	# TODO
 	# Allow casting between ints and floats
 	if type(condition_value) != type(variables.get(condition_name)):
-		raise Exception("The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'".format(
-			condition_value,
-			condition_name,
-			type(variable).__name__,
-		))
+		raise Exception(
+			"The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'"
+			.format(
+				condition_value,
+				condition_name,
+				type(variable).__name__,
+			)
+		)
 
 	# TODO
 	# Test other operators and validate string doesn't use operators other than equals
 	return condition_value == variable
 
+
 def evaluate_conditional(
 	conditional: Optional[List[Union[Conditional, Condition]]],
-	variables: Dict[str, Union[str, int]],
-	type: Literal["all", "any"]
+	variables: Dict[str, Union[str, int]], type: Literal["all", "any"]
 ) -> bool:
 	"""
 	This function will evaluate the conditionals and return the boolean result for the entire group
@@ -78,7 +90,7 @@ def evaluate_conditional(
 				result = evaluate_conditional(subconditional, variables, subtype)
 			elif type == "any" and result != True:
 				result = evaluate_conditional(subconditional, variables, subtype)
-		
+
 		evaluated_items += 1
 
 		# If one of the conditions returned false and the type is set to "all", stop evaluating and return
