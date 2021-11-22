@@ -1,5 +1,6 @@
 from .action import apply_actions_to_initial_value
-from .condition import assert_single_conditional, evaluate_conditional
+from .asserts import assert_single_conditional
+from .condition import evaluate_conditional
 from .types import Rule
 from .validators import plain_dictionary_schema
 from jsonschema.exceptions import ValidationError

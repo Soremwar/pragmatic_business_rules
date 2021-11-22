@@ -1,9 +1,13 @@
-from src.types import Action
-from typing import Dict, List, Optional, Union
+from .types import Action
+from typing import Dict, List, Union
+from .asserts import assert_comparable_type
 
 
-def apply_action_to_value(
+# TODO
+# Move type validation of actions to the top level to exit early
+def apply_action_to_item(
 	action: Action,
+	item: str,
 	value: Union[int, float, str],
 ) -> Union[int, float, str]:
 	if len(action.keys()) > 1:
@@ -15,6 +19,13 @@ def apply_action_to_value(
 
 	# Specyfing set will replace the current value with the one passed to set
 	if set is not None:
+		try:
+			assert_comparable_type(set, item, value)
+		except Exception as e:
+			raise Exception(
+				f"'set' action type differs from initial value type: {str(e)}"
+			)
+
 		return set
 	else:
 		raise Exception(
@@ -35,6 +46,6 @@ def apply_actions_to_initial_value(
 				f"The key '{item}' is not defined in the initial value object"
 			)
 
-		initial_value[item] = apply_action_to_value(
-			actions[item], initial_value[item]
+		initial_value[item] = apply_action_to_item(
+			actions[item], item, initial_value[item]
 		)

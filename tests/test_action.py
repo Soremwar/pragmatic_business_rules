@@ -1,4 +1,4 @@
-from src.action import apply_actions_to_initial_value, apply_action_to_value
+from src.action import apply_actions_to_initial_value, apply_action_to_item
 import pytest
 
 
@@ -13,7 +13,7 @@ class TestApplyActionToValue:
 				", ".join(action.keys())
 			),
 		):
-			apply_action_to_value(action, 0)
+			apply_action_to_item(action, "unknown key", 0)
 
 	def test_assert_action_type(self):
 		invalid_action = "unknown"
@@ -22,7 +22,23 @@ class TestApplyActionToValue:
 			Exception,
 			match=f"Unexpected '{invalid_action}' action was specified",
 		):
-			apply_action_to_value({invalid_action: 1}, 0)
+			apply_action_to_item({invalid_action: 1}, "unknown key", 0)
+
+	def test_assert_comparable_item_type(self):
+		invalid_item = "some item"
+		original_value = 0
+		new_value = "asd"
+
+		with pytest.raises(
+			Exception,
+			match="'set' action type differs from initial value type: The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'"
+			.format(
+				new_value,
+				invalid_item,
+				type(original_value).__name__,
+			),
+		):
+			apply_action_to_item({"set": new_value}, invalid_item, original_value)
 
 
 class TestApplyActionToInitialValue:
