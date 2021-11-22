@@ -5,6 +5,65 @@ import pytest
 
 class TestProcessRules:
 
+	def test_assert_rule_schema(self):
+		with pytest.raises(
+			Exception,
+			match="Invalid input for 'rules': 'actions' is a required property",
+		):
+			process_rules(
+				[
+					{
+						"conditions": {
+							"all": [],
+						},
+					},
+				],
+				{},
+				{},
+			)
+
+		with pytest.raises(
+			Exception,
+			match="Invalid input for 'rules': The provided type for the action is invalid",
+		):
+			process_rules(
+				[
+					{
+						"actions": {
+							"unknown rule": {
+								"set": True,
+							},
+						},
+						"conditions": {
+							"all": [],
+						},
+					},
+				],
+				{},
+				{},
+			)
+
+		with pytest.raises(
+			Exception,
+			match="Invalid input for 'rules': The provided operator for the condition is invalid",
+		):
+			process_rules(
+				[
+					{
+						"actions": {},
+						"conditions": {
+							"all": [{
+								"name": "variable",
+								"operator": "invalid operator",
+								"value": 1,
+							}],
+						},
+					},
+				],
+				{},
+				{},
+			)
+
 	def test_assert_variable_schema(self):
 		with pytest.raises(
 			Exception,
@@ -39,6 +98,7 @@ class TestProcessRules:
 			process_rules(
 				[
 					{
+						"actions": {},
 						"conditions": {
 							"all": [],
 							"any": []
@@ -57,6 +117,7 @@ class TestProcessRules:
 			process_rules(
 				[
 					{
+						"actions": {},
 						"conditions": {},
 					},
 				],

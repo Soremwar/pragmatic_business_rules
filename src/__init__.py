@@ -2,20 +2,29 @@ from .action import apply_actions_to_initial_value
 from .asserts import assert_single_conditional
 from .condition import evaluate_conditional
 from .types import Rule
-from .validators import plain_dictionary_schema
+from .validators import CustomValidationError, plain_dictionary_schema, rule_schema, validate_schema_with_custom_errors
 from jsonschema.exceptions import ValidationError
 from typing import Dict, List, Union
 import jsonschema
 
 
-# TODO
-# Use jsonschema to validate rules
 def process_rules(
 	rules: List[Rule],
 	variables: Dict[str, Union[int, float, str]],
 	initial_value: Dict[str, Union[int, float, str]],
 ) -> Dict[str, Union[int, float, str]]:
 	value = initial_value.copy()
+
+	try:
+		validate_schema_with_custom_errors(rules, rule_schema)
+	except CustomValidationError as validation_error:
+		raise Exception(
+			f"Invalid input for 'rules': {str(validation_error)}"
+		) from validation_error
+	except ValidationError as validation_error:
+		raise Exception(
+			f"Invalid input for 'rules': {str(validation_error)}"
+		) from validation_error
 
 	try:
 		jsonschema.validate(variables, plain_dictionary_schema)
@@ -48,14 +57,3 @@ def process_rules(
 			apply_actions_to_initial_value(actions, value)
 
 	return value
-
-
-# import json
-
-# f = open("rules.json")
-# data: List[Rule] = json.load(f)
-
-# process_rules(data, {
-# 	"DiasMoraInternos": 1.0,
-# 	"DiasMoraExternos": 1.0,
-# })
