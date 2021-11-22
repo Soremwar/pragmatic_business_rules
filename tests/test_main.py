@@ -104,6 +104,40 @@ class TestProcessRules:
 
 		assert result.get(item_name) == item_value
 
+	def test_not_apply_invalid_condition(self):
+		item_name = "single key"
+		current_item_value = 0
+		expected_item_value = 1
+		variable_name = "some variable"
+		variable_value = 77
+
+		result = process_rules(
+			[
+				{
+					"actions": {
+						item_name: {
+							"set": expected_item_value
+						}
+					},
+					"conditions": {
+						"any": [{
+							"name": variable_name,
+							"operator": "less_than",
+							"value": variable_value,
+						}],
+					}
+				},
+			],
+			{
+				variable_name: variable_value,
+			},
+			{
+				item_name: expected_item_value - 1,
+			},
+		)
+
+		assert result.get(item_name) == current_item_value
+
 	def test_apply_multiple_actions(self):
 		item_1_name = "some item name"
 		item_1_value = 1
