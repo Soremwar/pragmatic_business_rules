@@ -1,6 +1,6 @@
-from src.validators import plain_dictionary_schema
-import jsonschema
 from jsonschema.exceptions import ValidationError
+from pragmatic_business_rules.validators import plain_dictionary_schema
+import jsonschema
 import pytest
 
 

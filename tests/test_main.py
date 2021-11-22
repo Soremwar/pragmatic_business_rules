@@ -1,5 +1,4 @@
-from jsonschema.exceptions import ValidationError
-from src import process_rules
+from pragmatic_business_rules import process_rules
 import pytest
 
 

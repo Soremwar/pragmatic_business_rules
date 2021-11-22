@@ -1,5 +1,5 @@
 from setuptools import setup
-from src import __version__
+from pragmatic_business_rules import __version__
 import pathlib
 
 CWD = pathlib.Path(__file__).parent
@@ -20,7 +20,7 @@ setup(
 		"Programming Language :: Python :: 3",
 		"Programming Language :: Python :: 3.9",
 	],
-	packages=["src"],
+	packages=["pragmatic_business_rules"],
 	include_package_data=True,
 	install_requires=["jsonschema"],
 )

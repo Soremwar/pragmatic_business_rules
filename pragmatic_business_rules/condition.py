@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional, Union
 
-from src.asserts import assert_comparable_type, assert_single_conditional
+from .asserts import assert_comparable_type, assert_single_conditional
 from .types import Condition, Conditional
 
 

@@ -7,7 +7,7 @@ from jsonschema.exceptions import ValidationError
 from typing import Dict, List, Union
 import jsonschema
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 def process_rules(
