@@ -1,17 +1,34 @@
-from src.action import apply_actions_to_initial_value
+from .action import apply_actions_to_initial_value
 from .condition import assert_single_conditional, evaluate_conditional
 from .types import Rule
+from .validators import plain_dictionary_schema
+from jsonschema.exceptions import ValidationError
 from typing import Dict, List, Union
+import jsonschema
 
 
 # TODO
-# Use jsonschema to validate rules, variables and initial value
+# Use jsonschema to validate rules
 def process_rules(
 	rules: List[Rule],
 	variables: Dict[str, Union[int, float, str]],
 	initial_value: Dict[str, Union[int, float, str]],
 ) -> Dict[str, Union[int, float, str]]:
 	value = initial_value.copy()
+
+	try:
+		jsonschema.validate(variables, plain_dictionary_schema)
+	except ValidationError as validation_error:
+		raise Exception(
+			f"Invalid input for 'variables': {validation_error.message}"
+		) from validation_error
+
+	try:
+		jsonschema.validate(initial_value, plain_dictionary_schema)
+	except ValidationError as validation_error:
+		raise Exception(
+			f"Invalid input for 'initial_value': {validation_error.message}"
+		) from validation_error
 
 	for rule in rules:
 		actions = rule.get("actions")

@@ -1,8 +1,35 @@
+from jsonschema.exceptions import ValidationError
 from src import process_rules
 import pytest
 
 
 class TestProcessRules:
+
+	def test_assert_variable_schema(self):
+		with pytest.raises(
+			Exception,
+			match="Invalid input for 'variables': {} is not of type 'number', 'string'",
+		):
+			process_rules(
+				[],
+				{
+					"an object": {},
+				},
+				{},
+			)
+
+	def test_assert_initial_value_schema(self):
+		with pytest.raises(
+			Exception,
+			match="Invalid input for 'initial_value': {} is not of type 'number', 'string'",
+		):
+			process_rules(
+				[],
+				{},
+				{
+					"an object": {},
+				},
+			)
 
 	def test_assert_single_conditional(self):
 		with pytest.raises(
