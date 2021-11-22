@@ -1,16 +1,17 @@
-from src.action import apply_action_to_value
+from src.action import apply_actions_to_initial_value
 from .condition import assert_single_conditional, evaluate_conditional
 from .types import Rule
 from typing import Dict, List, Union
 
 
 # TODO
-# Use jsonschema to validate rules and variables
+# Use jsonschema to validate rules, variables and initial value
 def process_rules(
 	rules: List[Rule],
 	variables: Dict[str, Union[int, float, str]],
+	initial_value: Dict[str, Union[int, float, str]],
 ) -> Dict[str, Union[int, float, str]]:
-	output = {}
+	value = initial_value.copy()
 
 	for rule in rules:
 		actions = rule.get("actions")
@@ -26,10 +27,9 @@ def process_rules(
 		type = "all" if all is not None else "any"
 
 		if evaluate_conditional(conditional, variables, type):
-			for item in actions:
-				output[item] = apply_action_to_value(actions[item], output[item])
+			apply_actions_to_initial_value(actions, value)
 
-	return output
+	return value
 
 
 # import json
