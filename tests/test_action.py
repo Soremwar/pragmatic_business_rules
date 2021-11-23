@@ -1,4 +1,4 @@
-from pragmatic_business_rules.action import apply_actions_to_initial_value, apply_action_to_item
+from pragmatic_business_rules.action import apply_actions_to_variables, apply_action_to_item
 import pytest
 
 
@@ -31,7 +31,7 @@ class TestApplyActionToValue:
 
 		with pytest.raises(
 			Exception,
-			match="'set' action type differs from initial value type: The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'"
+			match="'set' action type differs from variable type: The value '{}' to compare for variable '{}' doesn't match the defined type of '{}'"
 			.format(
 				new_value,
 				invalid_item,
@@ -41,16 +41,16 @@ class TestApplyActionToValue:
 			apply_action_to_item({"set": new_value}, invalid_item, original_value)
 
 
-class TestApplyActionToInitialValue:
+class TestApplyActionToVariables:
 
-	def test_assert_item_defined_in_initial_value(self):
+	def test_assert_item_defined_in_variables(self):
 		item = "some key"
 
 		with pytest.raises(
 			Exception,
-			match=f"The key '{item}' is not defined in the initial value object"
+			match=f"The key '{item}' is not defined in the variables object"
 		):
-			apply_actions_to_initial_value(
+			apply_actions_to_variables(
 				{
 					item: {
 						"set": 10

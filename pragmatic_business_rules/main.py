@@ -1,4 +1,4 @@
-from .action import apply_actions_to_initial_value
+from .action import apply_actions_to_variables
 from .asserts import assert_single_conditional
 from .condition import evaluate_conditional
 from .types import Rule
@@ -59,6 +59,6 @@ def process_rules(
 		type = "all" if all is not None else "any"
 
 		if evaluate_conditional(conditional, variables, type):
-			apply_actions_to_initial_value(actions, result)
+			apply_actions_to_variables(actions, result)
 
 	return result

@@ -29,7 +29,7 @@ def assert_comparable_type(value: Any, variable_name: str, variable_value: Any):
 
 	if type(value) != type(variable_value):
 		raise Exception(
-			"The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'"
+			"The value '{}' to compare for variable '{}' doesn't match the defined type of '{}'"
 			.format(
 				value,
 				variable_name,

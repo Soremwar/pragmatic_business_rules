@@ -39,7 +39,7 @@ class TestEvaluateCondition:
 		condition_value = "a string"
 		with pytest.raises(
 			Exception,
-			match="The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'"
+			match="The value '{}' to compare for variable '{}' doesn't match the defined type of '{}'"
 			.format(
 				condition_value,
 				variable_name,

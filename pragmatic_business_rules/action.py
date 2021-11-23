@@ -22,9 +22,7 @@ def apply_action_to_item(
 		try:
 			assert_comparable_type(set, item, value)
 		except Exception as e:
-			raise Exception(
-				f"'set' action type differs from initial value type: {str(e)}"
-			)
+			raise Exception(f"'set' action type differs from variable type: {str(e)}")
 
 		return set
 	else:
@@ -33,19 +31,17 @@ def apply_action_to_item(
 		)
 
 
-def apply_actions_to_initial_value(
+def apply_actions_to_variables(
 	actions: List[Action],
-	initial_value: Dict[str, Union[int, float, str]],
+	variables: Dict[str, Union[int, float, str]],
 ):
 	"""
-	This function mutates the initial_value object passed to it
+	This function mutates the variables object passed to it
 	"""
 	for item in actions:
-		if initial_value.get(item) is None:
+		if variables.get(item) is None:
 			raise Exception(
-				f"The key '{item}' is not defined in the initial value object"
+				f"The key '{item}' is not defined in the variables object"
 			)
 
-		initial_value[item] = apply_action_to_item(
-			actions[item], item, initial_value[item]
-		)
+		variables[item] = apply_action_to_item(actions[item], item, variables[item])
