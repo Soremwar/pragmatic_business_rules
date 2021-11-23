@@ -38,7 +38,6 @@ def evaluate_condition(
 		if condition_operator == "equal_to":
 			return variable == condition_value
 		elif condition_operator == "greater_than_or_equal_to":
-			print({"condition": condition_value, "variable": variable})
 			return variable >= condition_value
 		elif condition_operator == "greater_than":
 			return variable > condition_value
