@@ -110,6 +110,34 @@ class TestEvaluateCondition:
 				},
 			)
 
+	def test_string_comparable_to_none(self):
+		variable = "variable name"
+
+		assert not evaluate_condition(
+			{
+				"name": variable,
+				"operator": "equal_to",
+				"value": None,
+			},
+			{
+				variable: "some value",
+			},
+		)
+
+	def test_none_comparable_to_none(self):
+		variable = "not a variable name"
+
+		assert evaluate_condition(
+			{
+				"name": variable,
+				"operator": "equal_to",
+				"value": None,
+			},
+			{
+				variable: None,
+			},
+		)
+
 	def test_string_equal_to(self):
 		variable = "some variable"
 		value = "some value"

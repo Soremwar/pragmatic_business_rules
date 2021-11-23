@@ -17,6 +17,12 @@ def assert_single_conditional(conditional: Conditional):
 
 
 def assert_comparable_type(value: Any, variable_name: str, variable_value: Any):
+	# None is comparable to string and None
+	if (value is None and variable_value is None) or (
+		type(value) == str and variable_value is None
+	) or (value is None and type(variable_value) == str):
+		return
+
 	# Ints and floats are comparable
 	if type(value) in [int, float] and type(variable_value) in [int, float]:
 		return

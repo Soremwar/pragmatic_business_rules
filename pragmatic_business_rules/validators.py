@@ -55,6 +55,7 @@ rule_schema = {
 				},
 				"value": {
 					"type": [
+						"null",
 						"number",
 						"string",
 					],
@@ -112,6 +113,7 @@ rule_schema = {
 							".+": {
 								"error_message": "The provided type for the action is invalid",
 								"type": [
+									"null",
 									"number",
 									"string",
 								],

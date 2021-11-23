@@ -26,7 +26,8 @@ def evaluate_condition(
 		variables.get(condition_name),
 	)
 
-	if type(condition_value) == str:
+	# The only value comparable to None is string, so they can be grouped in the same category
+	if type(condition_value) == str or condition_value is None:
 		if condition_operator == "equal_to":
 			return condition_value == variable
 		else:
