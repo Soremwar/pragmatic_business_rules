@@ -36,15 +36,16 @@ def evaluate_condition(
 			)
 	elif type(condition_value) == int or type(condition_value) == float:
 		if condition_operator == "equal_to":
-			return condition_value == variable
+			return variable == condition_value
 		elif condition_operator == "greater_than_or_equal_to":
-			return condition_value >= variable
+			print({"condition": condition_value, "variable": variable})
+			return variable >= condition_value
 		elif condition_operator == "greater_than":
-			return condition_value > variable
+			return variable > condition_value
 		elif condition_operator == "less_than_or_equal_to":
-			return condition_value <= variable
+			return variable <= condition_value
 		elif condition_operator == "less_than":
-			return condition_value < variable
+			return variable < condition_value
 		else:
 			raise Exception(
 				f"The operator '{condition_operator}' is not valid for number operations"

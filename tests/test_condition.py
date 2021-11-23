@@ -227,7 +227,7 @@ class TestEvaluateCondition:
 			{
 				"name": variable,
 				"operator": "greater_than_or_equal_to",
-				"value": value + 1,
+				"value": value - 1,
 			},
 			{
 				variable: value,
@@ -238,7 +238,7 @@ class TestEvaluateCondition:
 			{
 				"name": variable,
 				"operator": "greater_than_or_equal_to",
-				"value": value - 1,
+				"value": value + 1,
 			},
 			{
 				variable: value,
@@ -253,7 +253,7 @@ class TestEvaluateCondition:
 			{
 				"name": variable,
 				"operator": "greater_than",
-				"value": value + 1,
+				"value": value - 1,
 			},
 			{
 				variable: value,
@@ -275,7 +275,7 @@ class TestEvaluateCondition:
 			{
 				"name": variable,
 				"operator": "greater_than",
-				"value": value - 1,
+				"value": value + 1,
 			},
 			{
 				variable: value,
@@ -290,7 +290,7 @@ class TestEvaluateCondition:
 			{
 				"name": variable,
 				"operator": "less_than_or_equal_to",
-				"value": value - 1,
+				"value": value + 1,
 			},
 			{
 				variable: value,
@@ -312,7 +312,7 @@ class TestEvaluateCondition:
 			{
 				"name": variable,
 				"operator": "less_than_or_equal_to",
-				"value": value + 1,
+				"value": value - 1,
 			},
 			{
 				variable: value,
@@ -327,7 +327,7 @@ class TestEvaluateCondition:
 			{
 				"name": variable,
 				"operator": "less_than",
-				"value": value - 1,
+				"value": value + 1,
 			},
 			{
 				variable: value,
@@ -349,7 +349,7 @@ class TestEvaluateCondition:
 			{
 				"name": variable,
 				"operator": "less_than",
-				"value": value + 1,
+				"value": value - 1,
 			},
 			{
 				variable: value,
@@ -690,7 +690,7 @@ class TestEvaluateConditional:
 						"name": variable_3,
 						"operator": "equal_to",
 						"value": value_3,
-					}],
+					},],
 				},
 			],
 			{
