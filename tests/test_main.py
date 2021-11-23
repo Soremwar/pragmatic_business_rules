@@ -18,7 +18,6 @@ class TestProcessRules:
 					},
 				],
 				{},
-				{},
 			)
 
 		with pytest.raises(
@@ -38,7 +37,6 @@ class TestProcessRules:
 						},
 					},
 				],
-				{},
 				{},
 			)
 
@@ -60,7 +58,6 @@ class TestProcessRules:
 					},
 				],
 				{},
-				{},
 			)
 
 	def test_assert_variable_schema(self):
@@ -70,20 +67,6 @@ class TestProcessRules:
 		):
 			process_rules(
 				[],
-				{
-					"an object": {},
-				},
-				{},
-			)
-
-	def test_assert_initial_value_schema(self):
-		with pytest.raises(
-			Exception,
-			match="Invalid input for 'initial_value': {} is not of type 'number', 'string'",
-		):
-			process_rules(
-				[],
-				{},
 				{
 					"an object": {},
 				},
@@ -105,7 +88,6 @@ class TestProcessRules:
 					},
 				],
 				{},
-				{},
 			)
 
 	def test_assert_valid_conditional(self):
@@ -120,7 +102,6 @@ class TestProcessRules:
 						"conditions": {},
 					},
 				],
-				{},
 				{},
 			)
 
@@ -149,10 +130,8 @@ class TestProcessRules:
 				},
 			],
 			{
-				variable_name: variable_value,
-			},
-			{
 				item_name: current_item_value,
+				variable_name: variable_value,
 			},
 		)
 
@@ -182,10 +161,8 @@ class TestProcessRules:
 				},
 			],
 			{
-				variable_name: variable_value,
-			},
-			{
 				item_name: item_value - 1,
+				variable_name: variable_value,
 			},
 		)
 
@@ -216,10 +193,8 @@ class TestProcessRules:
 				},
 			],
 			{
-				variable_name: variable_value,
-			},
-			{
 				item_name: expected_item_value - 1,
+				variable_name: variable_value,
 			},
 		)
 
@@ -274,12 +249,10 @@ class TestProcessRules:
 				},
 			],
 			{
-				variable_1_name: variable_1_value,
-				variable_2_name: variable_2_value,
-			},
-			{
 				item_1_name: item_1_value - 100,
 				item_2_name: item_2_value + "123",
+				variable_1_name: variable_1_value,
+				variable_2_name: variable_2_value,
 			},
 		)
 

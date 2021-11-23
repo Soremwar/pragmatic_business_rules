@@ -13,9 +13,8 @@ __version__ = "0.1.1"
 def process_rules(
 	rules: List[Rule],
 	variables: Dict[str, Union[int, float, str]],
-	initial_value: Dict[str, Union[int, float, str]],
 ) -> Dict[str, Union[int, float, str]]:
-	value = initial_value.copy()
+	result = variables.copy()
 
 	try:
 		validate_schema_with_custom_errors(rules, rule_schema)
@@ -35,13 +34,6 @@ def process_rules(
 			f"Invalid input for 'variables': {validation_error.message}"
 		) from validation_error
 
-	try:
-		jsonschema.validate(initial_value, plain_dictionary_schema)
-	except ValidationError as validation_error:
-		raise Exception(
-			f"Invalid input for 'initial_value': {validation_error.message}"
-		) from validation_error
-
 	for rule in rules:
 		actions = rule.get("actions")
 		conditions = rule.get("conditions")
@@ -56,6 +48,6 @@ def process_rules(
 		type = "all" if all is not None else "any"
 
 		if evaluate_conditional(conditional, variables, type):
-			apply_actions_to_initial_value(actions, value)
+			apply_actions_to_initial_value(actions, result)
 
-	return value
+	return result
