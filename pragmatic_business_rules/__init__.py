@@ -1,3 +1,3 @@
 from .main import assert_valid_rules, process_rules
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
