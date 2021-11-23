@@ -58,7 +58,7 @@ def process_rules(
 		conditional = all if all is not None else any
 		type = "all" if all is not None else "any"
 
-		if evaluate_conditional(conditional, variables, type):
+		if evaluate_conditional(conditional, result, type):
 			apply_actions_to_variables(actions, result)
 
 	return result

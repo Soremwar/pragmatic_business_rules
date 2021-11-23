@@ -258,3 +258,53 @@ class TestProcessRules:
 
 		assert result.get(item_1_name) == item_1_value
 		assert result.get(item_2_name) == item_2_value
+
+	# This checks that actions are applied to variables,
+	# and those results are immediately available for the following evaluations
+	def test_action_are_applied_to_variables_immediately(self):
+		variable_1_name = "variable_1"
+		variable_1_value = 1
+		variable_2_name = "variable_2"
+		variable_2_value = 0
+		variable_3_name = "variable_3"
+		variable_3_value = 0
+
+		result = process_rules(
+			[
+				{
+					"actions": {
+						variable_2_name: {
+							"set": 1
+						}
+					},
+					"conditions": {
+						"any": [{
+							"name": variable_1_name,
+							"operator": "equal_to",
+							"value": 1,
+						}],
+					}
+				},
+				{
+					"actions": {
+						variable_3_name: {
+							"set": 1
+						}
+					},
+					"conditions": {
+						"any": [{
+							"name": variable_2_name,
+							"operator": "equal_to",
+							"value": 1,
+						}],
+					}
+				},
+			],
+			{
+				variable_1_name: variable_1_value,
+				variable_2_name: variable_2_value,
+				variable_3_name: variable_3_value,
+			},
+		)
+
+		assert result.get(variable_3_name) == 1
