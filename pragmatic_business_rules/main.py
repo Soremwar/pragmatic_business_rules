@@ -2,7 +2,7 @@ from .action import apply_actions_to_initial_value
 from .asserts import assert_single_conditional
 from .condition import evaluate_conditional
 from .types import Rule
-from .validators import CustomValidationError, plain_dictionary_schema, rule_schema, validate_schema_with_custom_errors
+from .validators import CustomValidationError, variable_schema, rule_schema, validate_schema_with_custom_errors
 from jsonschema.exceptions import ValidationError
 from typing import Dict, List, Union
 import jsonschema
@@ -39,7 +39,7 @@ def process_rules(
 		) from validation_error
 
 	try:
-		jsonschema.validate(variables, plain_dictionary_schema)
+		jsonschema.validate(variables, variable_schema)
 	except ValidationError as validation_error:
 		raise Exception(
 			f"Invalid input for 'variables': {validation_error.message}"

@@ -63,7 +63,7 @@ class TestProcessRules:
 	def test_assert_variable_schema(self):
 		with pytest.raises(
 			Exception,
-			match="Invalid input for 'variables': {} is not of type 'number', 'string'",
+			match="Invalid input for 'variables': {} is not of type 'null', 'number', 'string'",
 		):
 			process_rules(
 				[],

@@ -21,12 +21,13 @@ def validate_schema_with_custom_errors(data: dict, schema: dict):
 
 
 # This object will match any object with no nested properties and all items being
-# either strings or numbers
-plain_dictionary_schema = {
+# either None, strings or numbers
+variable_schema = {
 	"additionalProperties": False,
 	"patternProperties": {
 		".+": {
 			"type": [
+				"null",
 				"number",
 				"string",
 			]
