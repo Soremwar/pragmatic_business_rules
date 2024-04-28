@@ -57,36 +57,61 @@ class TestEvaluateCondition:
 				},
 			)
 
-	def test_coerces_number(self):
+	def test_coerces_number_types(self):
 		variable_name = "abc"
 		variable_value = 1
 		condition_value = 1.5
-		try:
-			evaluate_condition(
-				{
-					"name": variable_name,
-					"operator": "equal_to",
-					"value": condition_value,
-				},
-				{
-					variable_name: variable_value,
-				},
-			)
-		except Exception as e:
-			try:
-				assert str(
-					e
-				) == "The value '{}' to compare for variable '{}' doesn't match the defined variable type of '{}'".format(
-					condition_value,
-					variable_name,
-					type(variable_value).__name__,
-				)
-			except:
-				pytest.fail(
-					"Unexpected failure when checking if number types are comparable"
-				)
+		assert not evaluate_condition(
+			{
+				"name": variable_name,
+				"operator": "equal_to",
+				"value": condition_value,
+			},
+			{
+				variable_name: variable_value,
+			},
+		)
 
-			pytest.fail("Number types should be comparable")
+		variable_value = 5
+		condition_value = 5.0
+		assert evaluate_condition(
+			{
+				"name": variable_name,
+				"operator": "equal_to",
+				"value": condition_value,
+			},
+			{
+				variable_name: variable_value,
+			},
+		)
+
+	def test_coerces_string_to_number_types(self):
+		variable_name = "abc"
+		variable_value = 1
+		condition_value = "1.5"
+		assert not evaluate_condition(
+			{
+				"name": variable_name,
+				"operator": "equal_to",
+				"value": condition_value,
+			},
+			{
+				variable_name: variable_value,
+			},
+		)
+
+		variable_value = 10
+		condition_value = "10.0"
+		assert evaluate_condition(
+			{
+				"name": variable_name,
+				"operator": "equal_to",
+				"value": condition_value,
+			},
+			{
+				variable_name: variable_value,
+			},
+		)
 
 	def test_invalid_type(self):
 		variable = "123"

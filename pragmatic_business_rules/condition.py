@@ -1,8 +1,16 @@
 from typing import Dict, List, Literal, Optional, Union
-
 from .asserts import assert_comparable_type, assert_single_conditional
 from .types import Condition, Conditional
 
+def __try_coerce_condition_value(variable: Union[str, int, float], value: Union[str, int, float]):
+	""" Try and coerce the condition value to one comparable to the variable type """
+	if (type(variable) == int or type(variable) == float) and type(value) == str:
+		try:
+			return float(value)
+		except ValueError:
+			pass
+	
+	return value
 
 # By this point, the incoming conditions and variables have to have been already validated
 # for correct value types
@@ -12,18 +20,19 @@ def evaluate_condition(
 ) -> bool:
 	condition_name = condition.get("name")
 	condition_operator = condition.get("operator")
-	condition_value = condition.get("value")
+	raw_condition_value = condition.get("value")
 
 	# Validate variable exists and matches type
 	if condition_name not in variables:
 		raise Exception(f"Variable '{condition_name}' not defined")
 
 	variable: Union[str, int, float] = variables.get(condition_name)
+	condition_value = __try_coerce_condition_value(variable, raw_condition_value)
 
 	assert_comparable_type(
 		condition_value,
 		condition_name,
-		variables.get(condition_name),
+		variable,
 	)
 
 	# The only value comparable to None is string, so they can be grouped in the same category
