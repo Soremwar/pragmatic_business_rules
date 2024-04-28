@@ -1,8 +1,8 @@
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, cast, Dict, List, Literal, Optional, Union
 from .asserts import assert_comparable_type, assert_single_conditional
 from .types import Condition, Conditional
 
-def __try_coerce_condition_value(variable: Union[str, int, float], value: Union[str, int, float]):
+def __try_coerce_condition_value(variable: Any, value: Any) -> Any:
 	""" Try and coerce the condition value to one comparable to the variable type """
 	if (type(variable) == int or type(variable) == float) and type(value) == str:
 		try:
@@ -26,7 +26,7 @@ def evaluate_condition(
 	if condition_name not in variables:
 		raise Exception(f"Variable '{condition_name}' not defined")
 
-	variable: Union[str, int, float] = variables.get(condition_name)
+	variable = variables.get(condition_name)
 	condition_value = __try_coerce_condition_value(variable, raw_condition_value)
 
 	assert_comparable_type(
@@ -38,7 +38,7 @@ def evaluate_condition(
 	# The only value comparable to None is string, so they can be grouped in the same category
 	if type(condition_value) == str or condition_value is None:
 		if condition_operator == "equal_to":
-			return condition_value == variable
+			return variable == condition_value
 		else:
 			raise Exception(
 				f"The operator '{condition_operator}' is not valid for string operations"
@@ -47,13 +47,13 @@ def evaluate_condition(
 		if condition_operator == "equal_to":
 			return variable == condition_value
 		elif condition_operator == "greater_than_or_equal_to":
-			return variable >= condition_value
+			return variable >= condition_value # type: ignore[operator]
 		elif condition_operator == "greater_than":
-			return variable > condition_value
+			return variable > condition_value # type: ignore[operator]
 		elif condition_operator == "less_than_or_equal_to":
-			return variable <= condition_value
+			return variable <= condition_value # type: ignore[operator]
 		elif condition_operator == "less_than":
-			return variable < condition_value
+			return variable < condition_value # type: ignore[operator]
 		else:
 			raise Exception(
 				f"The operator '{condition_operator}' is not valid for number operations"
@@ -70,7 +70,7 @@ def evaluate_condition(
 
 def evaluate_conditional(
 	conditional: Optional[List[Union[Conditional, Condition]]],
-	variables: Dict[str, Union[str, int]],
+	variables: Dict[str, Union[str, int, float]],
 	type: Literal["all", "any"],
 ) -> bool:
 	"""
@@ -99,7 +99,7 @@ def evaluate_conditional(
 
 		# If it contains a value, it's a simple condition
 		if "value" in c:
-			condition_result = evaluate_condition(c, variables)
+			condition_result = evaluate_condition(cast(Condition, c), variables)
 		else:
 			assert_single_conditional(c)
 
@@ -107,7 +107,7 @@ def evaluate_conditional(
 			any = c.get("any")
 
 			subconditional = all if all is not None else any
-			subtype = "all" if all is not None else "any"
+			subtype: Literal["all", "any"] = "all" if all is not None else "any"
 
 			condition_result = evaluate_conditional(
 				subconditional,

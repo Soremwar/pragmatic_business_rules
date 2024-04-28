@@ -1,14 +1,14 @@
 from .action import apply_actions_to_variables
 from .asserts import assert_single_conditional
 from .condition import evaluate_conditional
-from .types import Rule
+from .types import Conditional, Rule
 from .validators import CustomValidationError, variable_schema, rule_schema, validate_schema_with_custom_errors
 from jsonschema.exceptions import ValidationError
-from typing import Dict, List, Union
+from typing import Literal, Union
 import jsonschema
 
 
-def assert_valid_rules(rules: List[Rule]):
+def assert_valid_rules(rules: list[Rule]):
 	"""
 	This function runs a validation over the rules passed and raises a detailed message with any
 	inconsistencies found
@@ -17,9 +17,9 @@ def assert_valid_rules(rules: List[Rule]):
 
 
 def process_rules(
-	rules: List[Rule],
-	variables: Dict[str, Union[int, float, str]],
-) -> Dict[str, Union[int, float, str]]:
+	rules: list[Rule],
+	variables: dict[str, Union[int, float, str]],
+) -> dict[str, Union[int, float, str]]:
 	"""
 	Process the rules and execute the result of the actions over the passed variables argument
 
@@ -46,8 +46,8 @@ def process_rules(
 		) from validation_error
 
 	for rule in rules:
-		actions = rule.get("actions")
-		conditions = rule.get("conditions")
+		actions = rule["actions"]
+		conditions: Conditional = rule["conditions"]
 
 		# Make sure the condition has at least one usable condition
 		assert_single_conditional(conditions)
@@ -55,8 +55,8 @@ def process_rules(
 		all = conditions.get("all")
 		any = conditions.get("any")
 
-		conditional = all if all is not None else any
-		type = "all" if all is not None else "any"
+		conditional = all if all is not None else any if any is not None else []
+		type: Literal["all", "any"] = "all" if all is not None else "any"
 
 		if evaluate_conditional(conditional, result, type):
 			apply_actions_to_variables(actions, result)

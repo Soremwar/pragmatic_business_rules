@@ -1,6 +1,6 @@
-import jsonschema
 from jsonschema.exceptions import ValidationError
-
+from typing import Any
+import jsonschema
 
 class CustomValidationError(Exception):
 
@@ -9,7 +9,7 @@ class CustomValidationError(Exception):
 		super().__init__(self.message)
 
 
-def validate_schema_with_custom_errors(data: dict, schema: dict):
+def validate_schema_with_custom_errors(data: Any, schema: dict):
 	try:
 		jsonschema.validate(data, schema)
 	except ValidationError as e:

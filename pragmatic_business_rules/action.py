@@ -1,6 +1,6 @@
-from .types import Action
-from typing import Dict, List, Union
 from .asserts import assert_comparable_type
+from .types import Action
+from typing import Union
 
 
 # TODO
@@ -32,8 +32,8 @@ def apply_action_to_item(
 
 
 def apply_actions_to_variables(
-	actions: List[Action],
-	variables: Dict[str, Union[int, float, str]],
+	actions: dict[str, Action],
+	variables: dict[str, Union[int, float, str]],
 ):
 	"""
 	This function mutates the variables object passed to it
