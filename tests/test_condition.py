@@ -21,14 +21,54 @@ class TestAssertSingleConditional:
 
 class TestEvaluateCondition:
 
+	def test_constant_exists(self):
+		constant = "xyz"
+		with pytest.raises(Exception, match=f"Constant '{constant}' not defined"):
+			evaluate_condition(
+				{
+					"constant": constant,
+					"operator": "equal_to",
+					"value": "something"
+				},
+				{},
+				{},
+			)
+
 	def test_variable_exists(self):
 		variable = "xyz"
 		with pytest.raises(Exception, match=f"Variable '{variable}' not defined"):
 			evaluate_condition(
 				{
-					"name": variable,
+					"variable": variable,
 					"operator": "equal_to",
 					"value": "something"
+				},
+				{},
+				{},
+			)
+
+	def test_constant_matches_type(self):
+		constant_name = "abc"
+		constant_value = 1
+		condition_value = "a string"
+		with pytest.raises(
+			Exception,
+			match='\\("{}", "{}", {}\\) and \\("{}", {}\\)'.format(
+				constant_name,
+				constant_value,
+				type(constant_value).__name__,
+				condition_value,
+				type(condition_value).__name__,
+			),
+		):
+			evaluate_condition(
+				{
+					"constant": constant_name,
+					"operator": "equal_to",
+					"value": condition_value,
+				},
+				{
+					constant_name: constant_value,
 				},
 				{},
 			)
@@ -39,34 +79,52 @@ class TestEvaluateCondition:
 		condition_value = "a string"
 		with pytest.raises(
 			Exception,
-			match="The value '{}' to compare for variable '{}' doesn't match the defined type of '{}'"
-			.format(
-				condition_value,
+			match='\\("{}", "{}", {}\\) and \\("{}", {}\\)'.format(
 				variable_name,
+				variable_value,
 				type(variable_value).__name__,
-			)
+				condition_value,
+				type(condition_value).__name__,
+			),
 		):
 			evaluate_condition(
 				{
-					"name": variable_name,
+					"variable": variable_name,
 					"operator": "equal_to",
 					"value": condition_value,
 				},
+				{},
 				{
 					variable_name: variable_value,
 				},
 			)
 
 	def test_coerces_number_types(self):
+		constant_name = "abc"
+		constant_value = 1
+		condition_value = 1.5
+		assert not evaluate_condition(
+			{
+				"constant": constant_name,
+				"operator": "equal_to",
+				"value": condition_value,
+			},
+			{
+				constant_name: constant_value,
+			},
+			{},
+		)
+
 		variable_name = "abc"
 		variable_value = 1
 		condition_value = 1.5
 		assert not evaluate_condition(
 			{
-				"name": variable_name,
+				"variable": variable_name,
 				"operator": "equal_to",
 				"value": condition_value,
 			},
+			{},
 			{
 				variable_name: variable_value,
 			},
@@ -76,38 +134,11 @@ class TestEvaluateCondition:
 		condition_value = 5.0
 		assert evaluate_condition(
 			{
-				"name": variable_name,
+				"variable": variable_name,
 				"operator": "equal_to",
 				"value": condition_value,
 			},
-			{
-				variable_name: variable_value,
-			},
-		)
-
-	def test_coerces_string_to_number_types(self):
-		variable_name = "abc"
-		variable_value = 1
-		condition_value = "1.5"
-		assert not evaluate_condition(
-			{
-				"name": variable_name,
-				"operator": "equal_to",
-				"value": condition_value,
-			},
-			{
-				variable_name: variable_value,
-			},
-		)
-
-		variable_value = 10
-		condition_value = "10.0"
-		assert evaluate_condition(
-			{
-				"name": variable_name,
-				"operator": "equal_to",
-				"value": condition_value,
-			},
+			{},
 			{
 				variable_name: variable_value,
 			},
@@ -126,10 +157,11 @@ class TestEvaluateCondition:
 		):
 			evaluate_condition(
 				{
-					"name": variable,
+					"variable": variable,
 					"operator": "equal_to",
 					"value": value,
 				},
+				{},
 				{
 					variable: {},
 				},
@@ -140,10 +172,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "equal_to",
 				"value": None,
 			},
+			{},
 			{
 				variable: "some value",
 			},
@@ -154,10 +187,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "equal_to",
 				"value": None,
 			},
+			{},
 			{
 				variable: None,
 			},
@@ -169,10 +203,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "equal_to",
 				"value": value,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -180,10 +215,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "equal_to",
 				"value": value,
 			},
+			{},
 			{
 				variable: value + " other",
 			},
@@ -198,10 +234,11 @@ class TestEvaluateCondition:
 		):
 			evaluate_condition(
 				{
-					"name": variable,
+					"variable": variable,
 					"operator": operator,
 					"value": "123",
 				},
+				{},
 				{
 					variable: "asd",
 				},
@@ -213,10 +250,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "equal_to",
 				"value": value,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -224,10 +262,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "equal_to",
 				"value": value,
 			},
+			{},
 			{
 				variable: value + 10,
 			},
@@ -239,10 +278,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "greater_than_or_equal_to",
 				"value": value,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -250,10 +290,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "greater_than_or_equal_to",
 				"value": value - 1,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -261,10 +302,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "greater_than_or_equal_to",
 				"value": value + 1,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -276,10 +318,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "greater_than",
 				"value": value - 1,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -287,10 +330,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "greater_than",
 				"value": value,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -298,10 +342,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "greater_than",
 				"value": value + 1,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -313,10 +358,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "less_than_or_equal_to",
 				"value": value + 1,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -324,10 +370,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "less_than_or_equal_to",
 				"value": value,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -335,10 +382,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "less_than_or_equal_to",
 				"value": value - 1,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -350,10 +398,11 @@ class TestEvaluateCondition:
 
 		assert evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "less_than",
 				"value": value + 1,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -361,10 +410,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "less_than",
 				"value": value,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -372,10 +422,11 @@ class TestEvaluateCondition:
 
 		assert not evaluate_condition(
 			{
-				"name": variable,
+				"variable": variable,
 				"operator": "less_than",
 				"value": value - 1,
 			},
+			{},
 			{
 				variable: value,
 			},
@@ -390,10 +441,11 @@ class TestEvaluateCondition:
 		):
 			evaluate_condition(
 				{
-					"name": variable,
+					"variable": variable,
 					"operator": operator,
 					"value": 0,
 				},
+				{},
 				{
 					variable: 1,
 				},
@@ -411,12 +463,13 @@ class TestEvaluateConditional:
 			evaluate_conditional(
 				[],
 				{},
+				{},
 				type,
 			)
 
 	def test_empty_conditional_yields_false(self):
-		assert not evaluate_conditional([], {}, "all")
-		assert not evaluate_conditional([], {}, "any")
+		assert not evaluate_conditional([], {}, {}, "all")
+		assert not evaluate_conditional([], {}, {}, "any")
 
 	def test_all_conditions(self):
 		variable_1 = "some variable"
@@ -427,16 +480,17 @@ class TestEvaluateConditional:
 		assert evaluate_conditional(
 			[
 				{
-					"name": variable_1,
+					"variable": variable_1,
 					"operator": "equal_to",
 					"value": value_1,
 				},
 				{
-					"name": variable_2,
+					"variable": variable_2,
 					"operator": "equal_to",
 					"value": value_2,
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -447,11 +501,12 @@ class TestEvaluateConditional:
 		assert evaluate_conditional(
 			[
 				{
-					"name": variable_1,
+					"variable": variable_1,
 					"operator": "equal_to",
 					"value": value_1,
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 			},
@@ -461,16 +516,17 @@ class TestEvaluateConditional:
 		assert not evaluate_conditional(
 			[
 				{
-					"name": variable_1,
+					"variable": variable_1,
 					"operator": "equal_to",
 					"value": value_1,
 				},
 				{
-					"name": variable_2,
+					"variable": variable_2,
 					"operator": "equal_to",
 					"value": value_2 + "123",
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -481,11 +537,12 @@ class TestEvaluateConditional:
 		assert not evaluate_conditional(
 			[
 				{
-					"name": variable_1,
+					"variable": variable_1,
 					"operator": "equal_to",
 					"value": value_1 + 15,
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 			},
@@ -505,12 +562,12 @@ class TestEvaluateConditional:
 				{
 					"all": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2,
 						},
@@ -518,12 +575,13 @@ class TestEvaluateConditional:
 				},
 				{
 					"all": [{
-						"name": variable_3,
+						"variable": variable_3,
 						"operator": "equal_to",
 						"value": value_3,
 					}],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -537,18 +595,19 @@ class TestEvaluateConditional:
 				{
 					"all": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2,
 						},
 					],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -561,12 +620,12 @@ class TestEvaluateConditional:
 				{
 					"all": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2 + "something",
 						},
@@ -574,12 +633,13 @@ class TestEvaluateConditional:
 				},
 				{
 					"all": [{
-						"name": variable_3,
+						"variable": variable_3,
 						"operator": "equal_to",
 						"value": value_3,
 					}],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -593,12 +653,12 @@ class TestEvaluateConditional:
 				{
 					"all": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2 + "something",
 						},
@@ -606,12 +666,13 @@ class TestEvaluateConditional:
 				},
 				{
 					"all": [{
-						"name": variable_3,
+						"variable": variable_3,
 						"operator": "equal_to",
 						"value": value_3 + 17,
 					}],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -629,16 +690,17 @@ class TestEvaluateConditional:
 		assert evaluate_conditional(
 			[
 				{
-					"name": variable_1,
+					"variable": variable_1,
 					"operator": "equal_to",
 					"value": value_1,
 				},
 				{
-					"name": variable_2,
+					"variable": variable_2,
 					"operator": "equal_to",
 					"value": value_2,
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -649,16 +711,17 @@ class TestEvaluateConditional:
 		assert evaluate_conditional(
 			[
 				{
-					"name": variable_1,
+					"variable": variable_1,
 					"operator": "equal_to",
 					"value": value_1,
 				},
 				{
-					"name": variable_2,
+					"variable": variable_2,
 					"operator": "equal_to",
 					"value": value_2 + "asd",
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -669,16 +732,17 @@ class TestEvaluateConditional:
 		assert not evaluate_conditional(
 			[
 				{
-					"name": variable_1,
+					"variable": variable_1,
 					"operator": "equal_to",
 					"value": value_1 + 10,
 				},
 				{
-					"name": variable_2,
+					"variable": variable_2,
 					"operator": "equal_to",
 					"value": value_2 + "123",
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -699,12 +763,12 @@ class TestEvaluateConditional:
 				{
 					"any": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2,
 						},
@@ -712,12 +776,13 @@ class TestEvaluateConditional:
 				},
 				{
 					"any": [{
-						"name": variable_3,
+						"variable": variable_3,
 						"operator": "equal_to",
 						"value": value_3,
 					},],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -731,12 +796,12 @@ class TestEvaluateConditional:
 				{
 					"any": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2 + "something",
 						},
@@ -744,12 +809,13 @@ class TestEvaluateConditional:
 				},
 				{
 					"any": [{
-						"name": variable_3,
+						"variable": variable_3,
 						"operator": "equal_to",
 						"value": value_3,
 					}],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -763,12 +829,12 @@ class TestEvaluateConditional:
 				{
 					"any": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2 + "something",
 						},
@@ -776,12 +842,13 @@ class TestEvaluateConditional:
 				},
 				{
 					"any": [{
-						"name": variable_3,
+						"variable": variable_3,
 						"operator": "equal_to",
 						"value": value_3 + 15156416,
 					}],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -795,12 +862,12 @@ class TestEvaluateConditional:
 				{
 					"any": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1 + 54164,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2 + "something",
 						},
@@ -808,12 +875,13 @@ class TestEvaluateConditional:
 				},
 				{
 					"any": [{
-						"name": variable_3,
+						"variable": variable_3,
 						"operator": "equal_to",
 						"value": value_3 + 17,
 					}],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -835,12 +903,12 @@ class TestEvaluateConditional:
 				{
 					"any": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2 + "asd",
 						},
@@ -848,12 +916,13 @@ class TestEvaluateConditional:
 				},
 				{
 					"all": [{
-						"name": variable_3,
+						"variable": variable_3,
 						"operator": "equal_to",
 						"value": value_3,
 					}],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -867,18 +936,19 @@ class TestEvaluateConditional:
 				{
 					"all": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
-							"name": variable_2,
+							"variable": variable_2,
 							"operator": "equal_to",
 							"value": value_2 + "something",
 						},
 					],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -892,19 +962,19 @@ class TestEvaluateConditional:
 				{
 					"all": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
 							"any": [
 								{
-									"name": variable_2,
+									"variable": variable_2,
 									"operator": "equal_to",
 									"value": value_2 + "something",
 								},
 								{
-									"name": variable_3,
+									"variable": variable_3,
 									"operator": "equal_to",
 									"value": value_3,
 								},
@@ -913,6 +983,7 @@ class TestEvaluateConditional:
 					],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -926,26 +997,26 @@ class TestEvaluateConditional:
 				{
 					"all": [
 						{
-							"name": variable_1,
+							"variable": variable_1,
 							"operator": "equal_to",
 							"value": value_1,
 						},
 						{
 							"any": [
 								{
-									"name": variable_2,
+									"variable": variable_2,
 									"operator": "equal_to",
 									"value": value_2 + "something",
 								},
 								{
 									"all": [
 										{
-											"name": variable_1,
+											"variable": variable_1,
 											"operator": "equal_to",
 											"value": value_1,
 										},
 										{
-											"name": variable_3,
+											"variable": variable_3,
 											"operator": "equal_to",
 											"value": value_3 + 245152,
 										},
@@ -956,6 +1027,7 @@ class TestEvaluateConditional:
 					],
 				},
 			],
+			{},
 			{
 				variable_1: value_1,
 				variable_2: value_2,
@@ -963,3 +1035,45 @@ class TestEvaluateConditional:
 			},
 			"any",
 		)
+
+class TestConditionalInputs:
+	def test_invalid_categories(self):
+		with pytest.raises(
+			Exception,
+			match='No values were found',
+		):
+			evaluate_condition(
+				{
+					"operator": "equal_to",
+				},
+				{},
+				{},
+			)
+
+		with pytest.raises(
+			Exception,
+			match='"value" found',
+		):
+			evaluate_condition(
+				{
+					"value": "some value",
+					"operator": "equal_to",
+				},
+				{},
+				{},
+			)
+
+		with pytest.raises(
+			Exception,
+			match='"constant, value, variable" found',
+		):
+			evaluate_condition(
+				{
+					"value": "some value",
+					"variable": "some variable",
+					"constant": "some constant",
+					"operator": "equal_to",
+				},
+				{},
+				{},
+			)

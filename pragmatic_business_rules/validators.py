@@ -19,6 +19,21 @@ def validate_schema_with_custom_errors(data: Any, schema: dict):
 		else:
 			raise e
 
+# This object will match any object with no nested properties and all items being
+# either None, strings or numbers
+constant_schema = {
+	"additionalProperties": False,
+	"patternProperties": {
+		".+": {
+			"type": [
+				"null",
+				"number",
+				"string",
+			]
+		},
+	},
+	"type": "object",
+}
 
 # This object will match any object with no nested properties and all items being
 # either None, strings or numbers
@@ -39,8 +54,9 @@ variable_schema = {
 rule_schema = {
 	"$defs": {
 		"condition": {
+			"additionalProperties": False,
 			"properties": {
-				"name": {
+				"constant": {
 					"type": "string",
 				},
 				"operator": {
@@ -61,11 +77,12 @@ rule_schema = {
 						"string",
 					],
 				},
+				"variable": {
+					"type": "string",
+				},
 			},
 			"required": [
-				"name",
 				"operator",
-				"value",
 			],
 			"type": "object",
 		},

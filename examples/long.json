@@ -6,12 +6,12 @@
         {
           "all": [
             {
-              "name": "DiasMoraInternos",
+              "variable": "DiasMoraInternos",
               "operator": "less_than_or_equal_to",
               "value": 0.0
             },
             {
-              "name": "DiasMoraExternos",
+              "variable": "DiasMoraExternos",
               "operator": "less_than_or_equal_to",
               "value": 0.0
             }
@@ -27,12 +27,12 @@
         {
           "all": [
             {
-              "name": "Referencias_Cant",
+              "variable": "Referencias_Cant",
               "operator": "greater_than_or_equal_to",
               "value": 2.0
             },
             {
-              "name": "Referencia_Meses_Antig",
+              "variable": "Referencia_Meses_Antig",
               "operator": "greater_than_or_equal_to",
               "value": 12.0
             }
@@ -41,12 +41,12 @@
         {
           "all": [
             {
-              "name": "Referencias_Cant",
+              "variable": "Referencias_Cant",
               "operator": "greater_than_or_equal_to",
               "value": 1.0
             },
             {
-              "name": "Referencia_Meses_Antig",
+              "variable": "Referencia_Meses_Antig",
               "operator": "greater_than_or_equal_to",
               "value": 24.0
             }
@@ -62,7 +62,7 @@
         {
           "all": [
             {
-              "name": "TC_Meses_Vigencia",
+              "variable": "TC_Meses_Vigencia",
               "operator": "greater_than_or_equal_to",
               "value": 0.0
             }
@@ -78,12 +78,12 @@
         {
           "all": [
             {
-              "name": "Tipo_Act_Economica",
+              "variable": "Tipo_Act_Economica",
               "operator": "equal_to",
               "value": "Pensionado"
             },
             {
-              "name": "Vl_Porc_Ingre_minimo",
+              "variable": "Vl_Porc_Ingre_minimo",
               "operator": "greater_than_or_equal_to",
               "value": 0.5
             }
@@ -99,7 +99,7 @@
         {
           "all": [
             {
-              "name": "Cant_CreditosBanca_Al_dia",
+              "variable": "Cant_CreditosBanca_Al_dia",
               "operator": "greater_than_or_equal_to",
               "value": 1.0
             }
@@ -115,7 +115,7 @@
         {
           "all": [
             {
-              "name": "Cant_Separados_Anno",
+              "variable": "Cant_Separados_Anno",
               "operator": "greater_than_or_equal_to",
               "value": 3.0
             }
@@ -128,26 +128,26 @@
     "actions": { "optional_rules": { "set": 1 } },
     "conditions": {
       "any": [
-        { "name": "score_P2", "operator": "equal_to", "value": 1 },
-        { "name": "score_P3", "operator": "equal_to", "value": 1 },
-        { "name": "score_P4", "operator": "equal_to", "value": 1 },
-        { "name": "score_P5", "operator": "equal_to", "value": 1 },
-        { "name": "score_P6", "operator": "equal_to", "value": 1 }
+        { "variable": "score_P2", "operator": "equal_to", "value": 1 },
+        { "variable": "score_P3", "operator": "equal_to", "value": 1 },
+        { "variable": "score_P4", "operator": "equal_to", "value": 1 },
+        { "variable": "score_P5", "operator": "equal_to", "value": 1 },
+        { "variable": "score_P6", "operator": "equal_to", "value": 1 }
       ]
     }
   },
   {
     "actions": { "mandatory_rules": { "set": 1 } },
     "conditions": {
-      "all": [{ "name": "score_P1", "operator": "equal_to", "value": 1 }]
+      "all": [{ "variable": "score_P1", "operator": "equal_to", "value": 1 }]
     }
   },
   {
     "actions": { "score_credito": { "set": 2 } },
     "conditions": {
       "all": [
-        { "name": "mandatory_rules", "operator": "equal_to", "value": 1 },
-        { "name": "optional_rules", "operator": "equal_to", "value": 0 }
+        { "variable": "mandatory_rules", "operator": "equal_to", "value": 1 },
+        { "variable": "optional_rules", "operator": "equal_to", "value": 0 }
       ]
     }
   },
@@ -155,8 +155,8 @@
     "actions": { "score_credito": { "set": 1 } },
     "conditions": {
       "all": [
-        { "name": "mandatory_rules", "operator": "equal_to", "value": 1 },
-        { "name": "optional_rules", "operator": "equal_to", "value": 1 }
+        { "variable": "mandatory_rules", "operator": "equal_to", "value": 1 },
+        { "variable": "optional_rules", "operator": "equal_to", "value": 1 }
       ]
     }
   }

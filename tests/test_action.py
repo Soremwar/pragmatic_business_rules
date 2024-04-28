@@ -31,11 +31,12 @@ class TestApplyActionToValue:
 
 		with pytest.raises(
 			Exception,
-			match="'set' action type differs from variable type: The value '{}' to compare for variable '{}' doesn't match the defined type of '{}'"
-			.format(
-				new_value,
+			match='\\("{}", "{}", {}\\) and \\("{}", {}\\)'.format(
 				invalid_item,
+				original_value,
 				type(original_value).__name__,
+				new_value,
+				type(new_value).__name__,
 			),
 		):
 			apply_action_to_item({"set": new_value}, invalid_item, original_value)

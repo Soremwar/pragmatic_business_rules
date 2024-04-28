@@ -1,59 +1,97 @@
-from typing import Any, cast, Dict, List, Literal, Optional, Union
+from typing import TypedDict, cast, Literal, Optional, Union
 from .asserts import assert_comparable_type, assert_single_conditional
 from .types import Condition, Conditional
 
-def __try_coerce_condition_value(variable: Any, value: Any) -> Any:
-	""" Try and coerce the condition value to one comparable to the variable type """
-	if (type(variable) == int or type(variable) == float) and type(value) == str:
-		try:
-			return float(value)
-		except ValueError:
-			pass
+class ConditionValues(TypedDict):
+	label_1: Optional[str]
+	label_2: Optional[str]
+	value_1: Union[float | int | None | str]
+	value_2: Union[float | int | None | str]
+
+def __get_condition_values(
+	condition: Condition,
+	constants: dict[str, Union[int, float, str]],
+	variables: dict[str, Union[int, float, str]],
+) -> ConditionValues:
+	categories = list(filter(lambda k: k != "operator", condition.keys()))
+
+	if len(categories) == 0:
+		raise Exception("No values were found to execute the condition")
+	elif len(categories) != 2:
+		raise Exception(f'A condition must be composed by two categories of values, {"only " if len(categories) == 1 else ""}"{", ".join(sorted(categories))}" found')
 	
-	return value
+	values: dict = {}
+	i = 1
+	for category in categories:
+		label: Optional[str] = None
+		value: Union[float | int | None | str]
+
+		if category == "constant":
+			constant_name = cast(str, condition.get(category))
+			if constant_name not in constants:
+				raise Exception(f"Constant '{constant_name}' not defined")
+
+			label = constant_name
+			value = constants[constant_name]
+		elif category == "value":
+			value = condition[cast(Literal["value"], category)]
+		elif category == "variable":
+			variable_name = cast(str, condition.get(category))
+			if variable_name not in variables:
+				raise Exception(f"Variable '{variable_name}' not defined")
+			
+			label = variable_name
+			value = variables[variable_name]
+
+		if i == 1:
+			values["label_1"] = label
+			values["value_1"] = value
+		else:
+			values["label_2"] = label
+			values["value_2"] = value
+
+		i += 1
+	
+	return cast(ConditionValues, values)
 
 # By this point, the incoming conditions and variables have to have been already validated
 # for correct value types
 def evaluate_condition(
 	condition: Condition,
-	variables: Dict[str, Union[int, float, str]],
+	constants: dict[str, Union[int, float, str]],
+	variables: dict[str, Union[int, float, str]],
 ) -> bool:
-	condition_name = condition.get("name")
-	condition_operator = condition.get("operator")
-	raw_condition_value = condition.get("value")
-
-	# Validate variable exists and matches type
-	if condition_name not in variables:
-		raise Exception(f"Variable '{condition_name}' not defined")
-
-	variable = variables.get(condition_name)
-	condition_value = __try_coerce_condition_value(variable, raw_condition_value)
+	condition_operator = condition["operator"]
+	values = __get_condition_values(condition, constants, variables)
+	value_1 = values["value_1"]
+	value_2 = values["value_2"]
 
 	assert_comparable_type(
-		condition_value,
-		condition_name,
-		variable,
+		values["label_1"],
+		value_1,
+		values["label_2"],
+		value_2,
 	)
 
 	# The only value comparable to None is string, so they can be grouped in the same category
-	if type(condition_value) == str or condition_value is None:
+	if type(value_1) == str or value_1 is None:
 		if condition_operator == "equal_to":
-			return variable == condition_value
+			return value_1 == value_2
 		else:
 			raise Exception(
 				f"The operator '{condition_operator}' is not valid for string operations"
 			)
-	elif type(condition_value) == int or type(condition_value) == float:
+	elif type(value_1) == int or type(value_1) == float:
 		if condition_operator == "equal_to":
-			return variable == condition_value
+			return value_1 == value_2
 		elif condition_operator == "greater_than_or_equal_to":
-			return variable >= condition_value # type: ignore[operator]
+			return value_1 >= value_2 # type: ignore[operator]
 		elif condition_operator == "greater_than":
-			return variable > condition_value # type: ignore[operator]
+			return value_1 > value_2 # type: ignore[operator]
 		elif condition_operator == "less_than_or_equal_to":
-			return variable <= condition_value # type: ignore[operator]
+			return value_1 <= value_2 # type: ignore[operator]
 		elif condition_operator == "less_than":
-			return variable < condition_value # type: ignore[operator]
+			return value_1 < value_2 # type: ignore[operator]
 		else:
 			raise Exception(
 				f"The operator '{condition_operator}' is not valid for number operations"
@@ -62,15 +100,16 @@ def evaluate_condition(
 		raise Exception(
 			"The value '{}' has a type '{}' which is not valid for a condition value"
 			.format(
-				condition_value,
-				type(condition_value).__name__,
+				value_1,
+				type(value_1).__name__,
 			)
 		)
 
 
 def evaluate_conditional(
-	conditional: Optional[List[Union[Conditional, Condition]]],
-	variables: Dict[str, Union[str, int, float]],
+	conditional: Optional[list[Union[Conditional, Condition]]],
+	constants: dict[str, Union[str, int, float]],
+	variables: dict[str, Union[str, int, float]],
 	type: Literal["all", "any"],
 ) -> bool:
 	"""
@@ -98,8 +137,8 @@ def evaluate_conditional(
 		condition_result = None
 
 		# If it contains a value, it's a simple condition
-		if "value" in c:
-			condition_result = evaluate_condition(cast(Condition, c), variables)
+		if "operator" in c:
+			condition_result = evaluate_condition(cast(Condition, c), constants, variables)
 		else:
 			assert_single_conditional(c)
 
@@ -111,11 +150,12 @@ def evaluate_conditional(
 
 			condition_result = evaluate_conditional(
 				subconditional,
+				constants,
 				variables,
 				subtype,
 			)
 
-		# Should never happend
+		# Should never happen
 		if condition_result is None:
 			raise Exception("The evaluation of a condition failed")
 

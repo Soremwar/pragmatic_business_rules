@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, List, Literal, Optional, TypedDict, Union
+from typing import Literal, Optional, TypedDict, Union
 
 
 class Action(TypedDict):
@@ -7,17 +7,18 @@ class Action(TypedDict):
 
 
 class Condition(TypedDict):
-	name: str
+	constant: Optional[str]
 	operator: Literal["equal_to", "greater_than_or_equal_to", "greater_than",
 										"less_than_or_equal_to", "less_than"]
-	value: Union[int, float, str]
+	value: Optional[Union[int, float, str]]
+	variable: Optional[str]
 
 
 class Conditional(TypedDict):
-	all: Optional[List[Union[Conditional, Condition]]]
-	any: Optional[List[Union[Conditional, Condition]]]
+	all: Optional[list[Union[Conditional, Condition]]]
+	any: Optional[list[Union[Conditional, Condition]]]
 
 
 class Rule(TypedDict):
-	actions: Dict[str, Action]
+	actions: dict[str, Action]
 	conditions: Conditional

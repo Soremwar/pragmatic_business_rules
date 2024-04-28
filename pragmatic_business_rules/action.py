@@ -20,7 +20,7 @@ def apply_action_to_item(
 	# Specyfing set will replace the current value with the one passed to set
 	if set is not None:
 		try:
-			assert_comparable_type(set, item, value)
+			assert_comparable_type(item, value, None, set)
 		except Exception as e:
 			raise Exception(f"'set' action type differs from variable type: {str(e)}")
 

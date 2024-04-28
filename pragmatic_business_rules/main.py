@@ -2,7 +2,7 @@ from .action import apply_actions_to_variables
 from .asserts import assert_single_conditional
 from .condition import evaluate_conditional
 from .types import Conditional, Rule
-from .validators import CustomValidationError, variable_schema, rule_schema, validate_schema_with_custom_errors
+from .validators import constant_schema, CustomValidationError, variable_schema, rule_schema, validate_schema_with_custom_errors
 from jsonschema.exceptions import ValidationError
 from typing import Literal, Union
 import jsonschema
@@ -18,15 +18,14 @@ def assert_valid_rules(rules: list[Rule]):
 
 def process_rules(
 	rules: list[Rule],
-	variables: dict[str, Union[int, float, str]],
+	constants: dict[str, Union[int, float, str]] = {},
+	variables: dict[str, Union[int, float, str]] = {},
 ) -> dict[str, Union[int, float, str]]:
 	"""
 	Process the rules and execute the result of the actions over the passed variables argument
 
 	This function does not mutate the original variables object passed to it
 	"""
-	result = variables.copy()
-
 	try:
 		assert_valid_rules(rules)
 	except CustomValidationError as validation_error:
@@ -39,17 +38,25 @@ def process_rules(
 		) from validation_error
 
 	try:
+		jsonschema.validate(constants, constant_schema)
+	except ValidationError as validation_error:
+		raise Exception(
+			f"Invalid input for 'constants': {validation_error.message}"
+		) from validation_error
+
+	try:
 		jsonschema.validate(variables, variable_schema)
 	except ValidationError as validation_error:
 		raise Exception(
 			f"Invalid input for 'variables': {validation_error.message}"
 		) from validation_error
-
+	
+	result = variables.copy()
 	for rule in rules:
 		actions = rule["actions"]
 		conditions: Conditional = rule["conditions"]
 
-		# Make sure the condition has at least one usable condition
+		# Make sure the condition has one single conditional defined
 		assert_single_conditional(conditions)
 
 		all = conditions.get("all")
@@ -58,7 +65,7 @@ def process_rules(
 		conditional = all if all is not None else any if any is not None else []
 		type: Literal["all", "any"] = "all" if all is not None else "any"
 
-		if evaluate_conditional(conditional, result, type):
+		if evaluate_conditional(conditional, constants, result, type):
 			apply_actions_to_variables(actions, result)
 
 	return result

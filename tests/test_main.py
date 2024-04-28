@@ -17,7 +17,6 @@ class TestProcessRules:
 						},
 					},
 				],
-				{},
 			)
 
 		with pytest.raises(
@@ -37,7 +36,6 @@ class TestProcessRules:
 						},
 					},
 				],
-				{},
 			)
 
 		with pytest.raises(
@@ -50,14 +48,25 @@ class TestProcessRules:
 						"actions": {},
 						"conditions": {
 							"all": [{
-								"name": "variable",
+								"variable": "variable",
 								"operator": "invalid operator",
 								"value": 1,
 							}],
 						},
 					},
 				],
-				{},
+			)
+
+	def test_assert_constant_schema(self):
+		with pytest.raises(
+			Exception,
+			match="Invalid input for 'constants': {} is not of type 'null', 'number', 'string'",
+		):
+			process_rules(
+				[],
+				constants={
+					"an object": {},
+				},
 			)
 
 	def test_assert_variable_schema(self):
@@ -67,7 +76,7 @@ class TestProcessRules:
 		):
 			process_rules(
 				[],
-				{
+				variables={
 					"an object": {},
 				},
 			)
@@ -87,7 +96,6 @@ class TestProcessRules:
 						},
 					},
 				],
-				{},
 			)
 
 	def test_assert_valid_conditional(self):
@@ -102,7 +110,6 @@ class TestProcessRules:
 						"conditions": {},
 					},
 				],
-				{},
 			)
 
 	def test_apply_no_action(self):
@@ -122,14 +129,14 @@ class TestProcessRules:
 					},
 					"conditions": {
 						"any": [{
-							"name": variable_name,
+							"variable": variable_name,
 							"operator": "equal_to",
 							"value": variable_value + "abc",
 						}],
 					}
 				},
 			],
-			{
+			variables={
 				item_name: current_item_value,
 				variable_name: variable_value,
 			},
@@ -140,8 +147,8 @@ class TestProcessRules:
 	def test_apply_single_action(self):
 		item_name = "single key"
 		item_value = 1
-		variable_name = "some variable"
-		variable_value = 77
+		constant_name = "some variable"
+		constant_value = 77
 
 		result = process_rules(
 			[
@@ -153,16 +160,18 @@ class TestProcessRules:
 					},
 					"conditions": {
 						"any": [{
-							"name": variable_name,
+							"constant": constant_name,
 							"operator": "equal_to",
-							"value": variable_value,
+							"value": constant_value,
 						}],
 					}
 				},
 			],
-			{
+			constants={
+				constant_name: constant_value,
+			},
+			variables={
 				item_name: item_value - 1,
-				variable_name: variable_value,
 			},
 		)
 
@@ -185,14 +194,14 @@ class TestProcessRules:
 					},
 					"conditions": {
 						"any": [{
-							"name": variable_name,
+							"variable": variable_name,
 							"operator": "less_than",
 							"value": variable_value,
 						}],
 					}
 				},
 			],
-			{
+			variables={
 				item_name: expected_item_value - 1,
 				variable_name: variable_value,
 			},
@@ -201,63 +210,65 @@ class TestProcessRules:
 		assert result.get(item_name) == current_item_value
 
 	def test_apply_multiple_actions(self):
-		item_1_name = "some item name"
-		item_1_value = 1
-		item_2_name = "some other item name"
-		item_2_value = "asd"
-		variable_1_name = "some variable"
-		variable_1_value = 12
-		variable_2_name = "other_variable"
-		variable_2_value = 241.7
+		constant_1_name = "some variable"
+		constant_1_value = 12
+		constant_2_name = "other_variable"
+		constant_2_value = 241.7
+		variable_1_name = "some item name"
+		variable_1_value = 1
+		variable_2_name = "some other item name"
+		variable_2_value = "asd"
 
 		result = process_rules(
 			[
 				{
 					"actions": {
-						item_1_name: {
-							"set": item_1_value
+						variable_1_name: {
+							"set": variable_1_value
 						}
 					},
 					"conditions": {
 						"any": [{
-							"name": variable_1_name,
+							"constant": constant_1_name,
 							"operator": "equal_to",
-							"value": variable_1_value,
+							"value": constant_1_value,
 						}],
 					}
 				},
 				{
 					"actions": {
-						item_2_name: {
-							"set": item_2_value
+						variable_2_name: {
+							"set": variable_2_value
 						}
 					},
 					"conditions": {
 						"all": [
 							{
-								"name": variable_1_name,
+								"constant": constant_1_name,
 								"operator": "equal_to",
-								"value": variable_1_value,
+								"value": constant_1_value,
 							},
 							{
-								"name": variable_2_name,
+								"constant": constant_2_name,
 								"operator": "equal_to",
-								"value": variable_2_value,
+								"value": constant_2_value,
 							},
 						],
 					}
 				},
 			],
-			{
-				item_1_name: item_1_value - 100,
-				item_2_name: item_2_value + "123",
-				variable_1_name: variable_1_value,
-				variable_2_name: variable_2_value,
+			constants={
+				constant_1_name: constant_1_value,
+				constant_2_name: constant_2_value,
+			},
+			variables={
+				variable_1_name: variable_1_value - 100,
+				variable_2_name: variable_2_value + "123",
 			},
 		)
 
-		assert result.get(item_1_name) == item_1_value
-		assert result.get(item_2_name) == item_2_value
+		assert result.get(variable_1_name) == variable_1_value
+		assert result.get(variable_2_name) == variable_2_value
 
 	# This checks that actions are applied to variables,
 	# and those results are immediately available for the following evaluations
@@ -279,7 +290,7 @@ class TestProcessRules:
 					},
 					"conditions": {
 						"any": [{
-							"name": variable_1_name,
+							"variable": variable_1_name,
 							"operator": "equal_to",
 							"value": 1,
 						}],
@@ -293,14 +304,14 @@ class TestProcessRules:
 					},
 					"conditions": {
 						"any": [{
-							"name": variable_2_name,
+							"variable": variable_2_name,
 							"operator": "equal_to",
 							"value": 1,
 						}],
 					}
 				},
 			],
-			{
+			variables={
 				variable_1_name: variable_1_value,
 				variable_2_name: variable_2_value,
 				variable_3_name: variable_3_value,
@@ -308,3 +319,35 @@ class TestProcessRules:
 		)
 
 		assert result.get(variable_3_name) == 1
+
+	def test_actions_are_not_applied_to_constants(self):
+		constant_1_name = "constant 1"
+		constant_2_name = "constant 2"
+		constant_2_value = 1
+
+		with pytest.raises(
+			Exception,
+			match=f"The key '{constant_1_name}' is not defined in the variables object",
+		):
+			process_rules(
+				[
+					{
+						"actions": {
+							constant_1_name: {
+								"set": 1
+							}
+						},
+						"conditions": {
+							"any": [{
+								"constant": constant_2_name,
+								"operator": "equal_to",
+								"value": constant_2_value,
+							}],
+						}
+					},
+				],
+				constants={
+					constant_1_name: 0,
+					constant_2_name: constant_2_value
+				}
+			)
