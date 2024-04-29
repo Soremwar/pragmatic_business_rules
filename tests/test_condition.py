@@ -1,5 +1,5 @@
+from src.pragmatic_business_rules.condition import assert_single_conditional, evaluate_condition, evaluate_conditional
 import pytest
-from pragmatic_business_rules.condition import assert_single_conditional, evaluate_condition, evaluate_conditional
 
 
 class TestAssertSingleConditional:

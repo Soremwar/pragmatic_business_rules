@@ -1,4 +1,4 @@
-from pragmatic_business_rules.action import apply_actions_to_variables, apply_action_to_item
+from src.pragmatic_business_rules.action import apply_actions_to_variables, apply_action_to_item
 import pytest
 
 

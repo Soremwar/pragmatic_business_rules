@@ -1,7 +1,6 @@
 from .types import Conditional
 from typing import Any, Optional
 
-
 def assert_single_conditional(conditional: Conditional):
 	all = conditional.get("all")
 	any = conditional.get("any")

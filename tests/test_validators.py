@@ -1,5 +1,5 @@
 from jsonschema.exceptions import ValidationError
-from pragmatic_business_rules.validators import rule_schema, variable_schema
+from src.pragmatic_business_rules.validators import rule_schema, variable_schema
 import jsonschema
 import pytest
 

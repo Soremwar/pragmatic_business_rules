@@ -1,4 +1,4 @@
-from pragmatic_business_rules import process_rules
+from src.pragmatic_business_rules import process_rules
 import pytest
 
 

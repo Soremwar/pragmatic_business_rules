@@ -1,8 +1,13 @@
+# Python environment
 __pycache__/
-.pytest_cache/
-build/
-dist/
-pragmatic_business_rules.egg-info/
-
 env/
+
+# Build
+dist/
+
+# Development
+.mypy_cache/
+
+# Testing
+.pytest_cache/
 test.py
