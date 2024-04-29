@@ -1,17 +1,18 @@
-from typing import TypedDict, cast, Literal, Optional, Union
 from .asserts import assert_comparable_type, assert_single_conditional
-from .types import Condition, Conditional
+from .types import Condition, Conditional, number
+from decimal import Decimal
+from typing import TypedDict, cast, Literal, Optional, Union
 
 class ConditionValues(TypedDict):
 	label_1: Optional[str]
 	label_2: Optional[str]
-	value_1: Union[float | int | None | str]
-	value_2: Union[float | int | None | str]
+	value_1: Union[None| number | str]
+	value_2: Union[None| number | str]
 
 def __get_condition_values(
 	condition: Condition,
-	constants: dict[str, Union[int, float, str]],
-	variables: dict[str, Union[int, float, str]],
+	constants: dict[str, Union[number, str]],
+	variables: dict[str, Union[number, str]],
 ) -> ConditionValues:
 	categories = list(filter(lambda k: k != "operator", condition.keys()))
 
@@ -24,7 +25,7 @@ def __get_condition_values(
 	i = 1
 	for category in categories:
 		label: Optional[str] = None
-		value: Union[float | int | None | str]
+		value: Union[None | number | str]
 
 		if category == "constant":
 			constant_name = cast(str, condition.get(category))
@@ -58,8 +59,8 @@ def __get_condition_values(
 # for correct value types
 def evaluate_condition(
 	condition: Condition,
-	constants: dict[str, Union[int, float, str]],
-	variables: dict[str, Union[int, float, str]],
+	constants: dict[str, Union[number, str]],
+	variables: dict[str, Union[number, str]],
 ) -> bool:
 	condition_operator = condition["operator"]
 	values = __get_condition_values(condition, constants, variables)
@@ -81,7 +82,7 @@ def evaluate_condition(
 			raise Exception(
 				f"The operator '{condition_operator}' is not valid for string operations"
 			)
-	elif type(value_1) == int or type(value_1) == float:
+	elif type(value_1) == Decimal or type(value_1) == int or type(value_1) == float:
 		if condition_operator == "equal_to":
 			return value_1 == value_2
 		elif condition_operator == "greater_than_or_equal_to":
@@ -108,8 +109,8 @@ def evaluate_condition(
 
 def evaluate_conditional(
 	conditional: Optional[list[Union[Conditional, Condition]]],
-	constants: dict[str, Union[str, int, float]],
-	variables: dict[str, Union[str, int, float]],
+	constants: dict[str, Union[str, number]],
+	variables: dict[str, Union[str, number]],
 	type: Literal["all", "any"],
 ) -> bool:
 	"""

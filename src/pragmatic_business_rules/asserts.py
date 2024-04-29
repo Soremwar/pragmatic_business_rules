@@ -1,4 +1,5 @@
 from .types import Conditional
+from decimal import Decimal
 from typing import Any, Optional
 
 def assert_single_conditional(conditional: Conditional):
@@ -29,8 +30,8 @@ def assert_comparable_type(
 	):
 		return
 
-	# Ints and floats are comparable
-	if type(value_1) in [int, float] and type(value_2) in [int, float]:
+	# Decimal, ints and floats are comparable
+	if type(value_1) in [Decimal, int, float] and type(value_2) in [Decimal, int, float]:
 		return
 
 	if type(value_1) != type(value_2):

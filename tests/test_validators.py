@@ -1,3 +1,4 @@
+from decimal import Decimal
 from jsonschema.exceptions import ValidationError
 from src.pragmatic_business_rules.validators import rule_schema, variable_schema
 import jsonschema
@@ -90,6 +91,7 @@ def test_plain_dictionary_schema():
 			"string": "some string",
 			"int": 1,
 			"float": 2.5,
+			"decimal": Decimal(12),
 			"none": None,
 		},
 		variable_schema,

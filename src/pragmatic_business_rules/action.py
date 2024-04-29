@@ -1,5 +1,5 @@
 from .asserts import assert_comparable_type
-from .types import Action
+from .types import Action, number
 from typing import Union
 
 
@@ -8,8 +8,8 @@ from typing import Union
 def apply_action_to_item(
 	action: Action,
 	item: str,
-	value: Union[int, float, str],
-) -> Union[int, float, str]:
+	value: Union[number, str],
+) -> Union[number, str]:
 	if len(action.keys()) > 1:
 		raise Exception(
 			"Too many actions '{}' were specified".format(", ".join(action.keys()))
@@ -33,7 +33,7 @@ def apply_action_to_item(
 
 def apply_actions_to_variables(
 	actions: dict[str, Action],
-	variables: dict[str, Union[int, float, str]],
+	variables: dict[str, Union[number, str]],
 ):
 	"""
 	This function mutates the variables object passed to it

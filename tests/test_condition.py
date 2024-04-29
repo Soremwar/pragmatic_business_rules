@@ -1,3 +1,4 @@
+from decimal import Decimal
 from src.pragmatic_business_rules.condition import assert_single_conditional, evaluate_condition, evaluate_conditional
 import pytest
 
@@ -99,7 +100,7 @@ class TestEvaluateCondition:
 				},
 			)
 
-	def test_coerces_number_types(self):
+	def test_compares_between_number_types(self):
 		constant_name = "abc"
 		constant_value = 1
 		condition_value = 1.5
@@ -116,8 +117,8 @@ class TestEvaluateCondition:
 		)
 
 		variable_name = "abc"
-		variable_value = 1
-		condition_value = 1.5
+		variable_value = 1.5
+		condition_value = 1
 		assert not evaluate_condition(
 			{
 				"variable": variable_name,
@@ -130,6 +131,7 @@ class TestEvaluateCondition:
 			},
 		)
 
+		variable_name = "abc"
 		variable_value = 5
 		condition_value = 5.0
 		assert evaluate_condition(
@@ -142,6 +144,21 @@ class TestEvaluateCondition:
 			{
 				variable_name: variable_value,
 			},
+		)
+
+		constant_name = "some"
+		constant_value = Decimal(5)
+		condition_value = 5
+		assert evaluate_condition(
+			{
+				"constant": constant_name,
+				"operator": "equal_to",
+				"value": condition_value,
+			},
+			{
+				constant_name: constant_value,
+			},
+			{},
 		)
 
 	def test_invalid_type(self):

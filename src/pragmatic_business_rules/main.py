@@ -1,7 +1,7 @@
 from .action import apply_actions_to_variables
 from .asserts import assert_single_conditional
 from .condition import evaluate_conditional
-from .types import Conditional, Rule
+from .types import Conditional, number, Rule
 from .validators import constant_schema, CustomValidationError, variable_schema, rule_schema, validate_schema_with_custom_errors
 from jsonschema.exceptions import ValidationError
 from typing import Literal, Union
@@ -18,9 +18,9 @@ def assert_valid_rules(rules: list[Rule]):
 
 def process_rules(
 	rules: list[Rule],
-	constants: dict[str, Union[int, float, str]] = {},
-	variables: dict[str, Union[int, float, str]] = {},
-) -> dict[str, Union[int, float, str]]:
+	constants: dict[str, Union[number, str]] = {},
+	variables: dict[str, Union[number, str]] = {},
+) -> dict[str, Union[number, str]]:
 	"""
 	Process the rules and execute the result of the actions over the passed variables argument
 
