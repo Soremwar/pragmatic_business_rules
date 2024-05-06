@@ -6,8 +6,8 @@ from typing import TypedDict, cast, Literal, Optional, Union
 class ConditionValues(TypedDict):
 	label_1: Optional[str]
 	label_2: Optional[str]
-	value_1: Union[None| number | str]
-	value_2: Union[None| number | str]
+	value_1: Union[None, number, str]
+	value_2: Union[None, number, str]
 
 def __get_condition_values(
 	condition: Condition,
@@ -25,7 +25,7 @@ def __get_condition_values(
 	i = 1
 	for category in categories:
 		label: Optional[str] = None
-		value: Union[None | number | str]
+		value: Union[None, number, str]
 
 		if category == "constant":
 			constant_name = cast(str, condition.get(category))
