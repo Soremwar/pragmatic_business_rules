@@ -23,3 +23,9 @@ build-backend = "hatchling.build"
 
 [tool.hatch.metadata.hooks.requirements_txt]
 files = ["requirements.txt"]
+
+[tool.yapf]
+based_on_style = "facebook"
+column_limit = 120
+continuation_align_style = "valign-right"
+use_tabs = true

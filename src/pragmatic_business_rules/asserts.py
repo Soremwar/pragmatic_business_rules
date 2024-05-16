@@ -1,19 +1,16 @@
-from .types import Conditional
+from .types import Conditional, Operator
 from decimal import Decimal
 from typing import Any, Optional
+
 
 def assert_single_conditional(conditional: Conditional):
 	all = conditional.get("all")
 	any = conditional.get("any")
 
 	if all is not None and any is not None:
-		raise Exception(
-			"'all' and 'any' properties can't be specified for the same conditional"
-		)
+		raise Exception("'all' and 'any' properties can't be specified for the same conditional")
 	elif all is None and any is None:
-		raise Exception(
-			"'all' or 'any' properties were not found in the conditional"
-		)
+		raise Exception("'all' or 'any' properties were not found in the conditional")
 
 
 def assert_comparable_type(
@@ -22,12 +19,22 @@ def assert_comparable_type(
 	label_2: Optional[str],
 	value_2: Any,
 ):
+	if type(value_1) == list or type(value_2) == list:
+		if type(value_1) == list and type(value_2) == list:
+			raise Exception(
+				'Can\'t compare between two list values ({}"{}") and ({}"{}")'.format(
+					f'"{label_1}", ' if label_1 is not None else "",
+					value_1,
+					f'"{label_2}", ' if label_2 is not None else "",
+					value_2,
+				)
+			)
+		else:
+			return
+
 	# None is comparable to string and None
-	if (value_1 is None and value_2 is None) or (
-		type(value_1) == str and value_2 is None
-	) or (
-		value_1 is None and type(value_2) == str
-	):
+	if (value_1 is None and value_2 is None) or (type(value_1) == str and
+													value_2 is None) or (value_1 is None and type(value_2) == str):
 		return
 
 	# Decimal, ints and floats are comparable
@@ -36,8 +43,7 @@ def assert_comparable_type(
 
 	if type(value_1) != type(value_2):
 		raise Exception(
-			'Can\'t compare values ({}"{}", {}) and ({}"{}", {})'
-			.format(
+			'Can\'t compare values ({}"{}", {}) and ({}"{}", {})'.format(
 				f'"{label_1}", ' if label_1 is not None else "",
 				value_1,
 				type(value_1).__name__,

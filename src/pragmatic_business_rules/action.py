@@ -1,5 +1,5 @@
 from .asserts import assert_comparable_type
-from .types import Action, number
+from .types import Action, Number
 from typing import Union
 
 
@@ -8,12 +8,10 @@ from typing import Union
 def apply_action_to_item(
 	action: Action,
 	item: str,
-	value: Union[number, str],
-) -> Union[number, str]:
+	value: Union[Number, str],
+) -> Union[Number, str]:
 	if len(action.keys()) > 1:
-		raise Exception(
-			"Too many actions '{}' were specified".format(", ".join(action.keys()))
-		)
+		raise Exception("Too many actions '{}' were specified".format(", ".join(action.keys())))
 
 	set = action.get("set")
 
@@ -26,22 +24,18 @@ def apply_action_to_item(
 
 		return set
 	else:
-		raise Exception(
-			"Unexpected '{}' action was specified".format(list(action.keys())[0])
-		)
+		raise Exception("Unexpected '{}' action was specified".format(list(action.keys())[0]))
 
 
 def apply_actions_to_variables(
 	actions: dict[str, Action],
-	variables: dict[str, Union[number, str]],
+	variables: dict[str, Union[Number, str]],
 ):
 	"""
 	This function mutates the variables object passed to it
 	"""
 	for item in actions:
 		if variables.get(item) is None:
-			raise Exception(
-				f"The key '{item}' is not defined in the variables object"
-			)
+			raise Exception(f"The key '{item}' is not defined in the variables object")
 
 		variables[item] = apply_action_to_item(actions[item], item, variables[item])

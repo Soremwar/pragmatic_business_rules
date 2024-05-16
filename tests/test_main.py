@@ -2,41 +2,90 @@ from src.pragmatic_business_rules import process_rules
 import pytest
 
 
-class TestProcessRules:
+class TestGeneral:
+	def test_correct_result(self):
+		var = "result"
+		constant_1 = "c1"
+		constant_1_value = "1"
+		constant_2 = "c2"
+		constant_2_value = 2
+		constant_3 = "c3"
+		constant_3_value_a = "x"
+		constant_3_value_b = ["x", "y"]
+		result = process_rules(
+			[
+				{
+					"actions": {
+						var: {
+							"set": 1
+						}
+					},
+					"conditions":
+						{
+							"all":
+								[
+									{
+										"constant": constant_1,
+										"operator": "equal_to",
+										"value": constant_1_value
+									},
+									{
+										"constant": constant_2,
+										"operator": "equal_to",
+										"value": constant_2_value
+									},
+									{
+										"constant": constant_3,
+										"operator": "in",
+										"value": constant_3_value_b
+									},
+								],
+						}
+				}
+			],
+			{
+				constant_1: constant_1_value,
+				constant_2: constant_2_value,
+				constant_3: constant_3_value_a,
+			},
+			{
+				var: 0,
+			},
+		)
 
+		assert result[var] == 1
+
+
+class TestProcessRules:
 	def test_assert_rule_schema(self):
 		with pytest.raises(
 			Exception,
 			match="Invalid input for 'rules': 'actions' is a required property",
 		):
-			process_rules(
-				[
-					{
-						"conditions": {
-							"all": [],
-						},
+			process_rules([
+				{
+					"conditions": {
+						"all": [],
 					},
-				],
-			)
+				},
+			], )
 
 		with pytest.raises(
 			Exception,
 			match="Invalid input for 'rules': The provided type for the action is invalid",
 		):
-			process_rules(
-				[
-					{
-						"actions": {
-							"unknown rule": {
-								"set": True,
-							},
-						},
-						"conditions": {
-							"all": [],
+			process_rules([
+				{
+					"actions": {
+						"unknown rule": {
+							"set": True,
 						},
 					},
-				],
-			)
+					"conditions": {
+						"all": [],
+					},
+				},
+			], )
 
 		with pytest.raises(
 			Exception,
@@ -46,13 +95,14 @@ class TestProcessRules:
 				[
 					{
 						"actions": {},
-						"conditions": {
-							"all": [{
-								"variable": "variable",
-								"operator": "invalid operator",
-								"value": 1,
-							}],
-						},
+						"conditions":
+							{
+								"all": [{
+									"variable": "variable",
+									"operator": "invalid operator",
+									"value": 1,
+								}],
+							},
 					},
 				],
 			)
@@ -60,7 +110,7 @@ class TestProcessRules:
 	def test_assert_constant_schema(self):
 		with pytest.raises(
 			Exception,
-			match="Invalid input for 'constants': {} is not of type 'null', 'number', 'string'",
+			match="Invalid input for 'constants': {} is not of type",
 		):
 			process_rules(
 				[],
@@ -72,7 +122,7 @@ class TestProcessRules:
 	def test_assert_variable_schema(self):
 		with pytest.raises(
 			Exception,
-			match="Invalid input for 'variables': {} is not of type 'null', 'number', 'string'",
+			match="Invalid input for 'variables': {} is not of type",
 		):
 			process_rules(
 				[],
@@ -82,35 +132,25 @@ class TestProcessRules:
 			)
 
 	def test_assert_single_conditional(self):
-		with pytest.raises(
-			Exception,
-			match="'all' and 'any' properties can't be specified for the same conditional"
-		):
-			process_rules(
-				[
-					{
-						"actions": {},
-						"conditions": {
-							"all": [],
-							"any": []
-						},
+		with pytest.raises(Exception, match="'all' and 'any' properties can't be specified for the same conditional"):
+			process_rules([
+				{
+					"actions": {},
+					"conditions": {
+						"all": [],
+						"any": []
 					},
-				],
-			)
+				},
+			], )
 
 	def test_assert_valid_conditional(self):
-		with pytest.raises(
-			Exception,
-			match="'all' or 'any' properties were not found in the conditional"
-		):
-			process_rules(
-				[
-					{
-						"actions": {},
-						"conditions": {},
-					},
-				],
-			)
+		with pytest.raises(Exception, match="'all' or 'any' properties were not found in the conditional"):
+			process_rules([
+				{
+					"actions": {},
+					"conditions": {},
+				},
+			], )
 
 	def test_apply_no_action(self):
 		item_name = "single key"
@@ -127,13 +167,17 @@ class TestProcessRules:
 							"set": expected_item_value
 						}
 					},
-					"conditions": {
-						"any": [{
-							"variable": variable_name,
-							"operator": "equal_to",
-							"value": variable_value + "abc",
-						}],
-					}
+					"conditions":
+						{
+							"any":
+								[
+									{
+										"variable": variable_name,
+										"operator": "equal_to",
+										"value": variable_value + "abc",
+									}
+								],
+						}
 				},
 			],
 			variables={
@@ -158,13 +202,14 @@ class TestProcessRules:
 							"set": item_value
 						}
 					},
-					"conditions": {
-						"any": [{
-							"constant": constant_name,
-							"operator": "equal_to",
-							"value": constant_value,
-						}],
-					}
+					"conditions":
+						{
+							"any": [{
+								"constant": constant_name,
+								"operator": "equal_to",
+								"value": constant_value,
+							}],
+						}
 				},
 			],
 			constants={
@@ -192,13 +237,14 @@ class TestProcessRules:
 							"set": expected_item_value
 						}
 					},
-					"conditions": {
-						"any": [{
-							"variable": variable_name,
-							"operator": "less_than",
-							"value": variable_value,
-						}],
-					}
+					"conditions":
+						{
+							"any": [{
+								"variable": variable_name,
+								"operator": "less_than",
+								"value": variable_value,
+							}],
+						}
 				},
 			],
 			variables={
@@ -227,13 +273,14 @@ class TestProcessRules:
 							"set": variable_1_value
 						}
 					},
-					"conditions": {
-						"any": [{
-							"constant": constant_1_name,
-							"operator": "equal_to",
-							"value": constant_1_value,
-						}],
-					}
+					"conditions":
+						{
+							"any": [{
+								"constant": constant_1_name,
+								"operator": "equal_to",
+								"value": constant_1_value,
+							}],
+						}
 				},
 				{
 					"actions": {
@@ -241,20 +288,22 @@ class TestProcessRules:
 							"set": variable_2_value
 						}
 					},
-					"conditions": {
-						"all": [
-							{
-								"constant": constant_1_name,
-								"operator": "equal_to",
-								"value": constant_1_value,
-							},
-							{
-								"constant": constant_2_name,
-								"operator": "equal_to",
-								"value": constant_2_value,
-							},
-						],
-					}
+					"conditions":
+						{
+							"all":
+								[
+									{
+										"constant": constant_1_name,
+										"operator": "equal_to",
+										"value": constant_1_value,
+									},
+									{
+										"constant": constant_2_name,
+										"operator": "equal_to",
+										"value": constant_2_value,
+									},
+								],
+						}
 				},
 			],
 			constants={
@@ -337,13 +386,17 @@ class TestProcessRules:
 								"set": 1
 							}
 						},
-						"conditions": {
-							"any": [{
-								"constant": constant_2_name,
-								"operator": "equal_to",
-								"value": constant_2_value,
-							}],
-						}
+						"conditions":
+							{
+								"any":
+									[
+										{
+											"constant": constant_2_name,
+											"operator": "equal_to",
+											"value": constant_2_value,
+										}
+									],
+							}
 					},
 				],
 				constants={
